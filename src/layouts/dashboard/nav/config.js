@@ -15,7 +15,7 @@ const navConfig = [
   },
   {
     title: 'Sản phẩm',
-    path: '/dashboard/user',
+    path: '/dashboard/productsV2',
     icon: icon('ic_laptop'),
   },
   {
