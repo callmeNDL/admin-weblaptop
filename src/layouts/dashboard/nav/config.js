@@ -18,47 +18,47 @@ const navConfig = [
     path: '/dashboard/productsV2',
     icon: icon('ic_laptop'),
   },
-  {
-    title: 'Thương hiệu',
-    path: '/dashboard/user',
-    icon: icon('ic_brand'),
-  },
-  {
-    title: 'Nhà sản xuất',
-    path: '/dashboard/user',
-    icon: icon('ic_home'),
-  },
+  // {
+  //   title: 'Thương hiệu',
+  //   path: '',
+  //   icon: icon('ic_brand'),
+  // },
+  // {
+  //   title: 'Nhà sản xuất',
+  //   path: '',
+  //   icon: icon('ic_home'),
+  // },
 
-  {
-    title: 'Giảm giá',
-    path: '/dashboard/user',
-    icon: icon('ic_dolar'),
-  },
-  {
-    title: 'Nhập hàng',
-    path: '/dashboard/user',
-    icon: icon('ic_input'),
-  },
-  {
-    title: 'Banner',
-    path: '/dashboard/user',
-    icon: icon('ic_image'),
-  },
-  {
-    title: 'Hoá đơn',
-    path: '/dashboard/user',
-    icon: icon('ic_bill'),
-  },
-  {
-    title: 'product',
-    path: '/dashboard/products',
-    icon: icon('ic_cart'),
-  },
-  {
-    title: 'blog',
-    path: '/dashboard/blog',
-    icon: icon('ic_blog'),
-  },
+  // {
+  //   title: 'Giảm giá',
+  //   path: '',
+  //   icon: icon('ic_dolar'),
+  // },
+  // {
+  //   title: 'Nhập hàng',
+  //   path: '',
+  //   icon: icon('ic_input'),
+  // },
+  // {
+  //   title: 'Banner',
+  //   path: '',
+  //   icon: icon('ic_image'),
+  // },
+  // {
+  //   title: 'Hoá đơn',
+  //   path: '',
+  //   icon: icon('ic_bill'),
+  // },
+  // {
+  //   title: 'product',
+  //   path: '',
+  //   icon: icon('ic_cart'),
+  // },
+  // {
+  //   title: 'blog',
+  //   path: '',
+  //   icon: icon('ic_blog'),
+  // },
   {
     title: 'login',
     path: '/login',
