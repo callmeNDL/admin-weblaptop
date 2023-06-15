@@ -1,312 +1,259 @@
-import { Helmet } from 'react-helmet-async';
-import { filter, sample } from 'lodash';
-import { sentenceCase } from 'change-case';
 import { useState } from 'react';
-import { faker } from '@faker-js/faker';
 // @mui
 import {
-  Card,
-  Table,
   Stack,
-  Paper,
-  Avatar,
   Button,
-  Popover,
-  Checkbox,
-  TableRow,
-  MenuItem,
-  TableBody,
-  TableCell,
   Container,
   Typography,
-  IconButton,
-  TableContainer,
-  TablePagination,
+  TextField,
+  Box,
+  Grid,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from '@mui/material';
+import { DataGrid } from '@mui/x-data-grid';
 // components
-import Label from '../components/label';
+import ActionButtons from '../components/action-button/ActionButtons';
+
 import Iconify from '../components/iconify';
-import Scrollbar from '../components/scrollbar';
-// sections
-import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
-// mock
-import USERLIST from '../_mock/user';
+import FormDialog from '../components/formDialog/FormDialog';
 
 // ----------------------------------------------------------------------
+export default function ProductPageV2() {
+  const [open, setOpen] = useState(false);
+  const [file, setFile] = useState(null);
 
-const TABLE_HEAD = [
-  { id: 'name', label: 'Name', alignRight: false },
-  { id: 'brand', label: 'brand', alignRight: false },
-  { id: 'role', label: 'Role', alignRight: false },
-  { id: 'isVerified', label: 'Verified', alignRight: false },
-  { id: 'status', label: 'Status', alignRight: false },
-  { id: '' },
-];
+  const columns = [
+    { field: 'id', headerName: 'ID', width: 90 },
+    {
+      field: 'name',
+      headerName: 'Tên sản phẩm',
+      minWidth: 400,
+      align: 'center',
+      flex: 1,
+      renderCell: (params) => (
+        <div style={{ width: 450, display: 'flex', alignItems: 'center', whiteSpace: 'normal', gap: 10 }}>
+          <img
+            src={params.row && params.row?.hinhAnhs[0]?.path}
+            alt="img-product-cart"
+            style={{ width: '80px', height: '80px', objectFit: 'cover' }}
+          />
+          <div>
+            <div>{params.row.name}</div>
+          </div>
+        </div>
+      ),
+    },
+    { field: 'brand', headerName: 'Thương hiệu', width: 110 },
+    {
+      field: 'price',
+      headerName: 'Giá',
+      type: 'number',
+      minWidth: 90,
+      align: 'center',
+    },
+    {
+      field: 'count',
+      headerName: 'Số lượng',
+      sortable: false,
+      minWidth: 100,
+      align: 'center',
+    },
+    {
+      field: 'acb',
+      headerName: 'Actions',
+      minWidth: 100,
+      align: 'center',
+      renderCell: (params) =>
+        ActionButtons(
+          params.row,
+          () => {},
+          () => {}
+        ),
+    },
+  ];
 
-const users = [...Array(24)].map((_, index) => ({
-  id: faker.datatype.uuid(),
-  avatarUrl: `/assets/images/avatars/avatar_${index + 1}.jpg`,
-  name: faker.name.fullName(),
-  company: faker.company.name(),
-  isVerified: faker.datatype.boolean(),
-  status: sample(['active', 'banned']),
-  role: sample([
-    'Leader',
-    'Hr Manager',
-    'UI Designer',
-    'UX Designer',
-    'UI/UX Designer',
-    'Project Manager',
-    'Backend Developer',
-    'Full Stack Designer',
-    'Front End Developer',
-    'Full Stack Developer',
-  ]),
-}));
-
-// ----------------------------------------------------------------------
-
-function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
-
-function getComparator(order, orderBy) {
-  return order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-function applySortFilter(array, comparator, query) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-    return a[1] - b[1];
-  });
-  if (query) {
-    return filter(array, (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1);
-  }
-  return stabilizedThis.map((el) => el[0]);
-}
-
-export default function ProductsPageV2() {
-  const [open, setOpen] = useState(null);
-
-  const [page, setPage] = useState(0);
-
-  const [order, setOrder] = useState('asc');
-
-  const [selected, setSelected] = useState([]);
-
-  const [orderBy, setOrderBy] = useState('name');
-
-  const [filterName, setFilterName] = useState('');
-
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-
-  const handleOpenMenu = (event) => {
-    setOpen(event.currentTarget);
+  const rows = [
+    {
+      id: 1,
+      hinhAnhs: [
+        {
+          path: 'https://lh3.googleusercontent.com/IUHZL9DwyhlhuK7FUW5PFkb0cF4C9-3YHgfe9fOWGyYXhKXhXG_SE1Yq_Gde37zqjIYXu7MbflLvR7NfED0LOxHZidr-iXSHnA=w500-rw',
+        },
+      ],
+      name: 'Laptop APPLE MacBook Pro 14" (Apple M2/RAM 16GB/512GB SSD/ macOS)',
+      brand: 'APPLE',
+      price: '24000000',
+      active: true,
+      count: 15,
+    },
+    {
+      id: 2,
+      hinhAnhs: [
+        {
+          path: 'https://lh3.googleusercontent.com/qgVwPKOgCXFJjAO-HB7Su5OPg7sBv4pJj9hTJxdvuz7GlWzA4gVaIC19oasGWcjIUgbqwZBpH1_OkTjyj_M=w500-rw',
+        },
+      ],
+      name: 'Laptop APPLE MacBook Pro 14" (Apple M2/RAM 16GB/512GB SSD/ macOS)',
+      brand: 'APPLE',
+      price: '20000000',
+      active: true,
+      count: 5,
+    },
+    {
+      id: 3,
+      hinhAnhs: [
+        {
+          path: 'https://lh3.googleusercontent.com/0Ho5t1AcaewiaKYlBgF8ks8oWZ8cqu50yANPyrBSGqrvFO03gfHo_LgSxPi8Afy2ksXoP337jgcCf8e2TQ=w500-rw',
+        },
+      ],
+      name: 'Laptop APPLE MacBook Pro 14" (Apple M2/RAM 16GB/512GB SSD/ macOS)',
+      brand: 'APPLE',
+      price: '21000000',
+      active: true,
+      count: 10,
+    },
+  ];
+  const handleClickOpen = () => {
+    setOpen(false);
   };
-
-  const handleCloseMenu = () => {
-    setOpen(null);
+  const handleClose = () => {
+    setOpen(false);
   };
-
-  const handleRequestSort = (event, property) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(property);
+  const handleOnChange = (e) => {
+    console.log(e.target.files[0]);
+    setFile(e.target.files[0]);
   };
-
-  const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelecteds = USERLIST.map((n) => n.name);
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  };
-
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
-    let newSelected = [];
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
-    }
-    setSelected(newSelected);
-  };
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setPage(0);
-    setRowsPerPage(parseInt(event.target.value, 10));
-  };
-
-  const handleFilterByName = (event) => {
-    setPage(0);
-    setFilterName(event.target.value);
-  };
-
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
-
-  const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
-
-  const isNotFound = !filteredUsers.length && !!filterName;
 
   return (
     <>
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Product
+            Userv2
           </Typography>
-          <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
-            New Product
+          <Button
+            variant="contained"
+            startIcon={<Iconify icon="eva:plus-fill" />}
+            onClick={() => {
+              setOpen(true);
+            }}
+          >
+            New User
           </Button>
         </Stack>
-
-        <Card>
-          <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
-
-          <Scrollbar>
-            <TableContainer sx={{ minWidth: 800 }}>
-              <Table>
-                <UserListHead
-                  order={order}
-                  orderBy={orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={USERLIST.length}
-                  numSelected={selected.length}
-                  onRequestSort={handleRequestSort}
-                  onSelectAllClick={handleSelectAllClick}
-                />
-                <TableBody>
-                  {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, name, role, status, company, avatarUrl, isVerified } = row;
-                    const selectedUser = selected.indexOf(name) !== -1;
-
-                    return (
-                      <TableRow hover key={id} tabIndex={-1} role="checkbox" selected={selectedUser}>
-                        <TableCell padding="checkbox">
-                          <Checkbox checked={selectedUser} onChange={(event) => handleClick(event, name)} />
-                        </TableCell>
-
-                        <TableCell component="th" scope="row" padding="none">
-                          <Stack direction="row" alignItems="center" spacing={2}>
-                            <Avatar alt={name} src={avatarUrl} />
-                            <Typography variant="subtitle2" noWrap>
-                              {name}
-                            </Typography>
-                          </Stack>
-                        </TableCell>
-
-                        <TableCell align="left">{company}</TableCell>
-
-                        <TableCell align="left">{role}</TableCell>
-
-                        <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell>
-
-                        <TableCell align="left">
-                          <Label color={(status === 'banned' && 'error') || 'success'}>{sentenceCase(status)}</Label>
-                        </TableCell>
-
-                        <TableCell align="right">
-                          <IconButton size="large" color="inherit" onClick={handleOpenMenu}>
-                            <Iconify icon={'eva:more-vertical-fill'} />
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                  {emptyRows > 0 && (
-                    <TableRow style={{ height: 53 * emptyRows }}>
-                      <TableCell colSpan={6} />
-                    </TableRow>
-                  )}
-                </TableBody>
-
-                {isNotFound && (
-                  <TableBody>
-                    <TableRow>
-                      <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                        <Paper
-                          sx={{
-                            textAlign: 'center',
-                          }}
-                        >
-                          <Typography variant="h6" paragraph>
-                            Not found
-                          </Typography>
-
-                          <Typography variant="body2">
-                            No results found for &nbsp;
-                            <strong>&quot;{filterName}&quot;</strong>.
-                            <br /> Try checking for typos or using complete words.
-                          </Typography>
-                        </Paper>
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                )}
-              </Table>
-            </TableContainer>
-          </Scrollbar>
-
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={USERLIST.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </Card>
+        <Stack direction="row" flexWrap="wrap-reverse" alignItems="center" justifyContent="flex-end" sx={{ mb: 5 }}>
+          <div style={{ height: 400, width: '100%' }}>
+            <DataGrid
+              rows={rows}
+              columns={columns}
+              autoHeight
+              disableRowSelectionOnClick
+              initialState={{
+                pagination: {
+                  paginationModel: { page: 0, pageSize: 5 },
+                },
+              }}
+              pageSizeOptions={[5, 10]}
+              checkboxSelection
+              rowHeight={100}
+            />
+          </div>
+        </Stack>
+        <FormDialog open={open} title="Thêm mới sản phẩm" handleClickOpen={handleClickOpen} handleClose={handleClose}>
+          <Box component="form" noValidate autoComplete="off">
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <TextField id="name" label="Name" multiline rows={2} fullWidth />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField id="price" label="Giá" fullWidth />
+              </Grid>
+              <Grid item xs={6}>
+                <FormControl fullWidth>
+                  <InputLabel id="demo-simple-select-label">RAM</InputLabel>
+                  <Select labelId="demo-simple-select-label" id="demo-simple-select" label="RAM">
+                    <MenuItem value={10}>Apple</MenuItem>
+                    <MenuItem value={20}>MSI</MenuItem>
+                    <MenuItem value={30}>DELL</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={6}>
+                <FormControl fullWidth>
+                  <InputLabel id="demo-simple-select-label">Thương hiệu</InputLabel>
+                  <Select labelId="demo-simple-select-label" id="demo-simple-select" label="Thương hiệu">
+                    <MenuItem value={10}>Apple</MenuItem>
+                    <MenuItem value={20}>MSI</MenuItem>
+                    <MenuItem value={30}>DELL</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={6}>
+                <FormControl fullWidth>
+                  <InputLabel id="demo-simple-select-label">CPU</InputLabel>
+                  <Select labelId="demo-simple-select-label" id="demo-simple-select" label="CPU">
+                    <MenuItem value={10}>Apple</MenuItem>
+                    <MenuItem value={20}>MSI</MenuItem>
+                    <MenuItem value={30}>DELL</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={6}>
+                <FormControl fullWidth>
+                  <InputLabel id="demo-simple-select-label">Thương hiệu</InputLabel>
+                  <Select labelId="demo-simple-select-label" id="demo-simple-select" label="Thương hiệu">
+                    <MenuItem value={10}>Apple</MenuItem>
+                    <MenuItem value={20}>MSI</MenuItem>
+                    <MenuItem value={30}>DELL</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={6}>
+                <FormControl fullWidth>
+                  <InputLabel id="demo-simple-select-label">Đồ họa</InputLabel>
+                  <Select labelId="demo-simple-select-label" id="demo-simple-select" label="Đồ họa">
+                    <MenuItem value={10}>Apple</MenuItem>
+                    <MenuItem value={20}>MSI</MenuItem>
+                    <MenuItem value={30}>DELL</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={6}>
+                <FormControl fullWidth>
+                  <InputLabel id="demo-simple-select-label">Đồ họa</InputLabel>
+                  <Select labelId="demo-simple-select-label" id="demo-simple-select" label="Đồ họa">
+                    <MenuItem value={10}>Apple</MenuItem>
+                    <MenuItem value={20}>MSI</MenuItem>
+                    <MenuItem value={30}>DELL</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={6}>
+                <FormControl fullWidth>
+                  <InputLabel id="demo-simple-select-label">Lưu trữ</InputLabel>
+                  <Select labelId="demo-simple-select-label" id="demo-simple-select" label="Lưu trữ">
+                    <MenuItem value={10}>Apple</MenuItem>
+                    <MenuItem value={20}>MSI</MenuItem>
+                    <MenuItem value={30}>DELL</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={9}>
+                <TextField id="name" label="Hình ảnh" fullWidth disabled value={file ? file?.name : ''} />
+              </Grid>
+              <Grid item xs={3}>
+                <Button variant="contained" component="label" style={{ height: '100%' }}>
+                  Upload File
+                  <input type="file" hidden onChange={handleOnChange} />
+                </Button>
+              </Grid>
+            </Grid>
+          </Box>
+        </FormDialog>
       </Container>
-
-      <Popover
-        open={Boolean(open)}
-        anchorEl={open}
-        onClose={handleCloseMenu}
-        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        PaperProps={{
-          sx: {
-            p: 1,
-            width: 140,
-            '& .MuiMenuItem-root': {
-              px: 1,
-              typography: 'body2',
-              borderRadius: 0.75,
-            },
-          },
-        }}
-      >
-        <MenuItem>
-          <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
-          Edit
-        </MenuItem>
-
-        <MenuItem sx={{ color: 'error.main' }}>
-          <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-          Delete
-        </MenuItem>
-      </Popover>
     </>
   );
 }
