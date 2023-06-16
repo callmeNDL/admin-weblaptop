@@ -162,7 +162,14 @@ export default function ProductPageV2() {
             />
           </div>
         </Stack>
-        <FormDialog open={open} title="Thêm mới sản phẩm" handleClickOpen={handleClickOpen} handleClose={handleClose}>
+        <FormDialog
+          open={open}
+          title="Thêm mới sản phẩm"
+          ok="Thêm mới"
+          close="Đóng"
+          handleClickOpen={handleClickOpen}
+          handleClose={handleClose}
+        >
           <Box component="form" noValidate autoComplete="off">
             <Grid container spacing={2}>
               <Grid item xs={12}>

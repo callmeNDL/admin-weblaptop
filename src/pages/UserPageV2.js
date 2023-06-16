@@ -122,7 +122,7 @@ export default function UsersPageV2() {
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Userv2
+            Người dùng
           </Typography>
           <Button
             variant="contained"
@@ -131,7 +131,7 @@ export default function UsersPageV2() {
               setOpen(true);
             }}
           >
-            New User
+            Thêm mới
           </Button>
         </Stack>
         <Stack direction="row" flexWrap="wrap-reverse" alignItems="center" justifyContent="flex-end" sx={{ mb: 5 }}>
@@ -155,6 +155,8 @@ export default function UsersPageV2() {
       </Container>
       <FormDialog
         open={open}
+        ok="Thêm mới"
+        close="Đóng"
         title="Thêm mới sản người dùng"
         handleClickOpen={handleClickOpen}
         handleClose={handleClose}

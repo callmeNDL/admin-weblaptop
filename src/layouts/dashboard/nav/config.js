@@ -18,11 +18,11 @@ const navConfig = [
     path: '/dashboard/productsV2',
     icon: icon('ic_laptop'),
   },
-  // {
-  //   title: 'Thương hiệu',
-  //   path: '',
-  //   icon: icon('ic_brand'),
-  // },
+  {
+    title: 'Thương hiệu',
+    path: '/dashboard/brand',
+    icon: icon('ic_brand'),
+  },
   // {
   //   title: 'Nhà sản xuất',
   //   path: '',
