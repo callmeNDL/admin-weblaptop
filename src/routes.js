@@ -1,4 +1,5 @@
-import { Navigate, useRoutes } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Navigate, useNavigate, useRoutes } from 'react-router-dom';
 // layouts
 import DashboardLayout from './layouts/dashboard';
 import SimpleLayout from './layouts/simple';
@@ -12,12 +13,32 @@ import DashboardAppPage from './pages/DashboardAppPage';
 import ProductsPageV2 from './pages/ProductsPageV2';
 import UsersPageV2 from './pages/UserPageV2';
 import Brand from './pages/Brand';
+import { getAuthToken } from './services/request/request-service';
 
 // ----------------------------------------------------------------------
 
 export default function Router() {
-  const routes = useRoutes([
-    {
+  const [token, setToken] = useState('')
+  const navigate = useNavigate();
+
+  const getToken = async () => {
+    const getTK = await getAuthToken()
+    if (getTK) {
+      setToken(getTK.accessToken)
+    }
+  }
+  useEffect(() => {
+    getToken()
+  }, [])
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/login");
+    }
+  }, [token])
+
+  const routes = useRoutes(
+    [{
       path: '/dashboard',
       element: <DashboardLayout />,
       children: [
@@ -49,7 +70,7 @@ export default function Router() {
       path: '*',
       element: <Navigate to="/404" replace />,
     },
-  ]);
+    ]);
 
   return routes;
 }

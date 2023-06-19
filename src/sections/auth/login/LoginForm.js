@@ -1,26 +1,52 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { enqueueSnackbar } from 'notistack';
 // @mui
-import { Link, Stack, IconButton, InputAdornment, TextField, Checkbox } from '@mui/material';
+import { Stack, IconButton, InputAdornment, TextField } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
 import Iconify from '../../../components/iconify';
+import AuthService from '../../../services/auth/auth-service';
 
 // ----------------------------------------------------------------------
 
 export default function LoginForm() {
-  const navigate = useNavigate();
-
   const [showPassword, setShowPassword] = useState(false);
+  const [credentials, setCredentials] = useState({
+    username: '',
+    password: '',
+  });
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const handleClick = () => {
-    navigate('/dashboard', { replace: true });
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setCredentials({
+      ...credentials,
+      [name]: value,
+    });
+  };
+  const handleClick = async () => {
+    console.log(credentials, 'credentials');
+    await AuthService.logUser(credentials, dispatch)
+      .then((res) => {
+        enqueueSnackbar('You have successfully logged in.', { variant: 'success' });
+        setCredentials({
+          email: '',
+          password: '',
+        });
+        navigate('/dashboard/app');
+      })
+      .catch((err) => {
+        enqueueSnackbar('Authentication error', { variant: 'error' });
+      });
   };
 
   return (
     <>
       <Stack spacing={3}>
-        <TextField name="email" label="Email address" />
+        <TextField name="username" label="Username" onChange={handleChange} />
 
         <TextField
           name="password"
@@ -35,14 +61,8 @@ export default function LoginForm() {
               </InputAdornment>
             ),
           }}
+          onChange={handleChange}
         />
-      </Stack>
-
-      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>
-        <Checkbox name="remember" label="Remember me" />
-        <Link variant="subtitle2" underline="hover">
-          Forgot password?
-        </Link>
       </Stack>
 
       <LoadingButton fullWidth size="large" type="submit" variant="contained" onClick={handleClick}>
