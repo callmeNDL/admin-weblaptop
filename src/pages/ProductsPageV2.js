@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 // @mui
 import {
   Stack,
@@ -19,12 +19,13 @@ import ActionButtons from '../components/action-button/ActionButtons';
 
 import Iconify from '../components/iconify';
 import FormDialog from '../components/formDialog/FormDialog';
+import { get, getAuthToken } from '../services/request/request-service';
 
 // ----------------------------------------------------------------------
 export default function ProductPageV2() {
   const [open, setOpen] = useState(false);
   const [file, setFile] = useState(null);
-
+  const [dataList, setDataList] = useState([]);
   const columns = [
     { field: 'id', headerName: 'ID', width: 90 },
     {
@@ -69,53 +70,36 @@ export default function ProductPageV2() {
       renderCell: (params) =>
         ActionButtons(
           params.row,
-          () => {},
-          () => {}
+          () => { },
+          () => { }
         ),
     },
   ];
 
-  const rows = [
-    {
-      id: 1,
-      hinhAnhs: [
-        {
-          path: 'https://lh3.googleusercontent.com/IUHZL9DwyhlhuK7FUW5PFkb0cF4C9-3YHgfe9fOWGyYXhKXhXG_SE1Yq_Gde37zqjIYXu7MbflLvR7NfED0LOxHZidr-iXSHnA=w500-rw',
-        },
-      ],
-      name: 'Laptop APPLE MacBook Pro 14" (Apple M2/RAM 16GB/512GB SSD/ macOS)',
-      brand: 'APPLE',
-      price: '24000000',
-      active: true,
-      count: 15,
-    },
-    {
-      id: 2,
-      hinhAnhs: [
-        {
-          path: 'https://lh3.googleusercontent.com/qgVwPKOgCXFJjAO-HB7Su5OPg7sBv4pJj9hTJxdvuz7GlWzA4gVaIC19oasGWcjIUgbqwZBpH1_OkTjyj_M=w500-rw',
-        },
-      ],
-      name: 'Laptop APPLE MacBook Pro 14" (Apple M2/RAM 16GB/512GB SSD/ macOS)',
-      brand: 'APPLE',
-      price: '20000000',
-      active: true,
-      count: 5,
-    },
-    {
-      id: 3,
-      hinhAnhs: [
-        {
-          path: 'https://lh3.googleusercontent.com/0Ho5t1AcaewiaKYlBgF8ks8oWZ8cqu50yANPyrBSGqrvFO03gfHo_LgSxPi8Afy2ksXoP337jgcCf8e2TQ=w500-rw',
-        },
-      ],
-      name: 'Laptop APPLE MacBook Pro 14" (Apple M2/RAM 16GB/512GB SSD/ macOS)',
-      brand: 'APPLE',
-      price: '21000000',
-      active: true,
-      count: 10,
-    },
-  ];
+  const rows = []
+
+  useEffect(() => {
+    getList()
+  }, [])
+
+  const getList = async () => {
+    const { accessToken } = await getAuthToken();
+    if (accessToken) {
+      try {
+        const res = await get('sanpham', {
+          headers: {
+            Authorization: `Token ${accessToken}`,
+          }
+        })
+        if (res) {
+          setDataList(res)
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
   const handleClickOpen = () => {
     setOpen(false);
   };
@@ -132,7 +116,7 @@ export default function ProductPageV2() {
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Userv2
+            Sản phẩm
           </Typography>
           <Button
             variant="contained"

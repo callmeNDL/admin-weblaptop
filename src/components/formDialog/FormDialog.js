@@ -5,7 +5,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 
-export default function FormDialog({ children, open, title, handleClickOpen, handleClose, ok, close }) {
+export default function FormDialog({ children, open, title, handleClickOpen, handleSubmit, handleClose, ok, close }) {
   return (
     <div>
       <Dialog
@@ -18,7 +18,7 @@ export default function FormDialog({ children, open, title, handleClickOpen, han
         <DialogContent>{children}</DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>{close}</Button>
-          <Button onClick={handleClose} autoFocus>
+          <Button onClick={handleSubmit} autoFocus>
             {ok}
           </Button>
         </DialogActions>

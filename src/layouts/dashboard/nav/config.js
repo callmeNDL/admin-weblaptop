@@ -39,7 +39,7 @@ const navConfig = [
         title: 'Nhà cung cấp',
         type: 'text',
         subNav: [],
-        path: '/',
+        path: '/dashboard/brand',
         icon: icon('ic_input'),
       }, {
         title: 'Phiếu nhập hàng',
@@ -51,7 +51,7 @@ const navConfig = [
         title: 'Loại sản phẩm',
         type: 'text',
         subNav: [],
-        path: '/dashboard/brand',
+        path: '/dashboard/productType',
         icon: icon('ic_brand'),
       }
     ],

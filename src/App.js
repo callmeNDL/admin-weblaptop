@@ -2,7 +2,8 @@ import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { Provider } from 'react-redux';
 import { SnackbarProvider } from 'notistack';
-
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 // routes
 import Router from './routes';
 // theme
@@ -26,11 +27,14 @@ export default function App() {
       >
         <HelmetProvider>
           <BrowserRouter>
-            <ThemeProvider>
-              <ScrollToTop />
-              <StyledChart />
-              <Router />
-            </ThemeProvider>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <ThemeProvider>
+                <ScrollToTop />
+                <StyledChart />
+                <Router />
+              </ThemeProvider>
+            </LocalizationProvider>
+
           </BrowserRouter>
         </HelmetProvider>
       </SnackbarProvider>

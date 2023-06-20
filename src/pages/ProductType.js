@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 // @mui
 import { Stack, Button, Container, Typography, TextField, Box, Grid } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
@@ -7,39 +7,38 @@ import ActionButtons from '../components/action-button/ActionButtons';
 
 import Iconify from '../components/iconify';
 import FormDialog from '../components/formDialog/FormDialog';
+import { get, getAuthToken } from '../services/request/request-service';
 
 // ----------------------------------------------------------------------
-export default function Brand() {
+const ProductsType = () => {
   const [open, setOpen] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
+  const [dataList, setDataList] = useState([]);
 
   const [file, setFile] = useState(null);
 
   const columns = [
     { field: 'id', headerName: 'ID', width: 90 },
     {
-      field: 'brand',
-      headerName: 'Tên thương hiệu',
-      minWidth: 200,
+      field: 'tenDanhMuc',
+      headerName: 'Tên danh mục',
+      minWidth: 150,
       align: 'center',
     },
     {
-      field: 'image',
-      headerName: 'Hinh ảnh',
-      width: 200,
+      field: 'moTa',
+      headerName: 'Mô tả',
+      minWidth: 300,
       align: 'center',
-      renderCell: (params) => (
-        <div style={{ width: 450, display: 'flex', alignItems: 'center', whiteSpace: 'normal', gap: 10 }}>
-          <img
-            src={params.row && params.row?.hinhAnhs[0]?.path}
-            alt="img-product-cart"
-            style={{ width: '100%', height: '100px', objectFit: 'cover' }}
-          />
-        </div>
-      ),
     },
     {
-      field: 'acb',
+      field: 'ProductsCount',
+      headerName: 'Số lượng sản phẩm',
+      minWidth: 150,
+      align: 'center',
+    },
+    {
+      field: 'action',
       headerName: 'Actions',
       minWidth: 100,
       align: 'center',
@@ -52,44 +51,29 @@ export default function Brand() {
     },
   ];
 
-  const rows = [
-    {
-      id: 1,
-      hinhAnhs: [
-        {
-          path: 'https://lh3.googleusercontent.com/_85FkTsaqoVl-I6d5pN9jrE7jHrz1hzXQktSqWNrLmeIMaWB-wxsE6D_IyDC414BXjRM54JXbZzGQy8rFsz0-zWkVG4V6CuXHw=w400-rw',
-        },
-      ],
-      brand: 'HP',
-      price: '24000000',
-      active: true,
-      count: 15,
-    },
-    {
-      id: 2,
-      hinhAnhs: [
-        {
-          path: 'https://lh3.googleusercontent.com/IqFtu_Hq7dQkOuTjKwVTjKV5Z1qK3FsuX3yX6Ab30i_yXZ2B1dFs8uQwQ9zgTt3UZts3RnuYx-ujvQW0i5Ox2UDhrqxeehI=w400-rw',
-        },
-      ],
-      brand: 'ASUS',
-      price: '20000000',
-      active: true,
-      count: 5,
-    },
-    {
-      id: 3,
-      hinhAnhs: [
-        {
-          path: 'https://cdn.redmondpie.com/wp-content/uploads/2015/03/Apple-event-banners-main.png',
-        },
-      ],
-      brand: 'APPLE',
-      price: '21000000',
-      active: true,
-      count: 10,
-    },
-  ];
+  useEffect(() => {
+    getList()
+  }, [])
+
+  const getList = async () => {
+    const { accessToken } = await getAuthToken();
+    if (accessToken) {
+      try {
+        const res = await get('loaisanpham')
+        if (res && res.status === 'OK') {
+          setDataList(res.data.map((item) => {
+            return {
+              ...item, ProductsCount: item.sanPhams.length
+            }
+          }))
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
+
   const handleClickOpen = () => {
     setOpen(false);
   };
@@ -110,13 +94,12 @@ export default function Brand() {
   const handleDeleteClose = () => {
     setOpenDelete(false);
   };
-
   return (
     <>
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Thương hiệu
+            Loại sản phẩm
           </Typography>
           <Button
             variant="contained"
@@ -131,7 +114,7 @@ export default function Brand() {
         <Stack direction="row" flexWrap="wrap-reverse" alignItems="center" justifyContent="flex-end" sx={{ mb: 5 }}>
           <div style={{ height: 400, width: '100%' }}>
             <DataGrid
-              rows={rows}
+              rows={dataList}
               columns={columns}
               autoHeight
               disableRowSelectionOnClick
@@ -142,7 +125,7 @@ export default function Brand() {
               }}
               pageSizeOptions={[5, 10]}
               checkboxSelection
-              rowHeight={150}
+              rowHeight={80}
             />
           </div>
         </Stack>
@@ -161,12 +144,6 @@ export default function Brand() {
               </Grid>
               <Grid item xs={9}>
                 <TextField id="name" label="Hình ảnh" fullWidth disabled value={file ? file?.name : ''} />
-              </Grid>
-              <Grid item xs={3}>
-                <Button variant="contained" component="label" style={{ height: '100%' }}>
-                  Upload File
-                  <input type="file" hidden onChange={handleOnChange} />
-                </Button>
               </Grid>
             </Grid>
           </Box>
@@ -187,3 +164,5 @@ export default function Brand() {
     </>
   );
 }
+
+export default ProductsType

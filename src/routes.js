@@ -14,6 +14,7 @@ import ProductsPageV2 from './pages/ProductsPageV2';
 import UsersPageV2 from './pages/UserPageV2';
 import Brand from './pages/Brand';
 import { getAuthToken } from './services/request/request-service';
+import ProductsType from './pages/ProductType';
 
 // ----------------------------------------------------------------------
 
@@ -27,6 +28,7 @@ export default function Router() {
       setToken(getTK.accessToken)
     }
   }
+
   useEffect(() => {
     getToken()
   }, [])
@@ -47,8 +49,8 @@ export default function Router() {
         { path: 'productsV2', element: <ProductsPageV2 /> },
         { path: 'userV2', element: <UsersPageV2 /> },
         { path: 'brand', element: <Brand /> },
+        { path: 'productType', element: <ProductsType /> },
         { path: 'user', element: <UserPage /> },
-
         { path: 'user', element: <UserPage /> },
         { path: 'products', element: <ProductsPage /> },
         { path: 'blog', element: <BlogPage /> },
