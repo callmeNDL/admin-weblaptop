@@ -14,7 +14,6 @@ import {
 } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import { enqueueSnackbar } from 'notistack';
-import { useDispatch, useSelector } from 'react-redux';
 import { DataGrid } from '@mui/x-data-grid';
 import { DatePicker } from '@mui/x-date-pickers';
 
@@ -22,10 +21,7 @@ import { DatePicker } from '@mui/x-date-pickers';
 import Iconify from '../components/iconify';
 import FormDialog from '../components/formDialog/FormDialog';
 import ActionButtons from '../components/action-button/ActionButtons';
-import { get, getAuthToken, post } from '../services/request/request-service';
-import { setProvinceAction } from '../redux/province/province.actions';
-import { selectProvince } from '../redux/province/province.selectors';
-
+import { Delete, get, getAuthToken, post } from '../services/request/request-service';
 // ----------------------------------------------------------------------
 export default function UsersPageV2() {
   const [open, setOpen] = useState(false);
@@ -36,9 +32,17 @@ export default function UsersPageV2() {
     province: '',
     district: '',
     ward: '',
+    hoTenLot: '',
+    soDienThoai: '',
+    ngaySinh: '',
+    username: '',
+    password: '',
+    email: '',
+    ten: "",
+    diaChi: ''
   });
   const [province, setProvince] = useState([]);
-  const dispatch = useDispatch();
+  const [selectData, setSelectData] = useState([]);
 
   const columns = [
     { field: 'id', headerName: 'ID', width: 50, align: 'center' },
@@ -92,28 +96,72 @@ export default function UsersPageV2() {
       flex: 1,
       align: 'center',
       renderCell: (params) =>
-        ActionButtons(
-          params.row,
-          () => { },
-          () => { }
-        ),
+        <ActionButtons params={params}
+          handleClickOpen={() => {
+            setOpen(true)
+            setSelectData(params.row)
+          }}
+          handleClickDelOpen={() => {
+            setSelectData(params.row)
+            handleDele()
+          }
+          }
+        />
     },
   ];
-  // const selectProvince = useSelector((state) => state.province)
+
+  useEffect(() => {
+    if (selectData) {
+      setCredentials(selectData)
+    }
+  }, [selectData])
+
+  const handleDele = async () => {
+    const { accessToken } = await getAuthToken();
+    if (selectData && accessToken) {
+      if (selectData.id) {
+        try {
+          const res = await Delete(`/customer/${selectData.id}/delete`, {
+            headers: {
+              Authorization: `Token ${accessToken}`,
+            }
+          })
+          if (res) {
+            enqueueSnackbar('Xoá thành công', { variant: 'error' });
+            getList()
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    }
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setCredentials({
+      province: '',
+      district: '',
+      ward: '',
+    })
+  };
 
   useEffect(() => {
     getList()
     getProvince()
-    // if (!selectProvince) { getProvince() }
+    setSelectData({})
+    setCredentials({
+      province: '',
+      district: '',
+      ward: '',
+    })
   }, [])
-
 
   const getProvince = async () => {
     try {
       const res = await get('province')
       if (res) {
         setProvince(res);
-        // dispatch(setProvinceAction(res))
       }
     } catch (error) {
       console.log(error);
@@ -173,13 +221,10 @@ export default function UsersPageV2() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    console.log(credentials, 'credentials');
     try {
       const res = await post('/customer/register', credentials);
       if (res) {
         enqueueSnackbar('Thêm thành công', { variant: 'success' });
-        setCredentials({})
         handleClose()
       }
     } catch (error) {
@@ -203,18 +248,6 @@ export default function UsersPageV2() {
         console.log(error);
       }
     }
-  };
-
-  const handleClickOpen = () => {
-    setOpen(false);
-  };
-  const handleClose = () => {
-    setOpen(false);
-    setCredentials({
-      province: '',
-      district: '',
-      ward: '',
-    })
   };
 
   return (
@@ -258,7 +291,7 @@ export default function UsersPageV2() {
         ok="Thêm mới"
         close="Đóng"
         title="Thêm mới sản người dùng"
-        handleClickOpen={handleClickOpen}
+        handleClickOpen={() => { setOpen(true) }}
         handleClose={handleClose}
         handleSubmit={handleSubmit}
       >
@@ -270,6 +303,7 @@ export default function UsersPageV2() {
                 name="hoTenLot"
                 required
                 fullWidth
+                value={credentials.hoTenLot}
                 id="hoTenLot"
                 type="text"
                 label="Họ và tên lót"
@@ -283,6 +317,7 @@ export default function UsersPageV2() {
                 fullWidth
                 id="ten"
                 label="Ten"
+                value={credentials.ten}
                 type="text"
                 name="ten"
                 autoComplete="family-name"
@@ -296,13 +331,14 @@ export default function UsersPageV2() {
                 fullWidth
                 id="email"
                 label="Email"
+                value={credentials.email}
                 name="email"
                 type="email"
                 autoComplete="email"
                 onChange={handleChange}
               />
             </Grid>
-            <Grid item xs={12}>
+            {!selectData && <Grid item xs={12}>
               <TextField
                 required
                 fullWidth
@@ -313,11 +349,12 @@ export default function UsersPageV2() {
                 autoComplete="new-password"
                 onChange={handleChange}
               />
-            </Grid>
+            </Grid>}
             <Grid item xs={12}>
               <TextField
                 required
                 fullWidth
+                value={credentials.username}
                 name="username"
                 label="Username"
                 id="username"
@@ -338,6 +375,7 @@ export default function UsersPageV2() {
               <TextField
                 required
                 fullWidth
+                value={credentials.soDienThoai}
                 name="soDienThoai"
                 label="SDT"
                 type="number"
@@ -352,7 +390,7 @@ export default function UsersPageV2() {
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
-                  value={credentials && credentials.province ? credentials.province : ''}
+                  value={credentials && credentials.province ? credentials.province.id : ''}
                   label="province"
                   name="province"
                   onChange={handleChange}
@@ -373,7 +411,7 @@ export default function UsersPageV2() {
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
-                  value={credentials && credentials.district ? credentials.district : ''}
+                  value={credentials && credentials.district ? credentials.district.id : ''}
                   label="district"
                   name="district"
                   onChange={handleChange}
@@ -395,7 +433,7 @@ export default function UsersPageV2() {
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
-                  value={credentials && credentials.ward ? credentials.ward : ''}
+                  value={credentials && credentials.ward ? credentials.ward.id : ''}
                   label="ward"
                   name="ward"
                   onChange={handleChange}
@@ -410,7 +448,6 @@ export default function UsersPageV2() {
                 </Select>
               </FormControl>
             </Grid>
-
             <Grid item xs={12}>
               <TextField
                 autoComplete="given-name"
@@ -420,6 +457,7 @@ export default function UsersPageV2() {
                 id="diaChi"
                 type="text"
                 label="Địa chỉ"
+                value={credentials.diaChi}
                 onChange={handleChange}
               />
             </Grid>

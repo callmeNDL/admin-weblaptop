@@ -14,8 +14,13 @@ const ProductsType = () => {
   const [open, setOpen] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const [dataList, setDataList] = useState([]);
-
+  const [credentials, setCredentials] = useState({
+    tenDanhMuc: '',
+    moTa: '',
+  });
   const [file, setFile] = useState(null);
+  const [selectData, setSelectData] = useState({});
+
 
   const columns = [
     { field: 'id', headerName: 'ID', width: 90 },
@@ -43,17 +48,36 @@ const ProductsType = () => {
       minWidth: 100,
       align: 'center',
       renderCell: (params) =>
-        ActionButtons(
-          params.row,
-          () => { },
-          () => { }
-        ),
+        <ActionButtons
+          handleClickOpen={() => {
+            setSelectData(params.row)
+            setCredentials(params.row)
+            setOpen(true)
+          }}
+          handleClickDelOpen={() => {
+            setSelectData(params.row)
+          }}
+
+        />
+
     },
   ];
 
   useEffect(() => {
     getList()
+    setCredentials({
+      tenDanhMuc: '',
+      moTa: '',
+    })
   }, [])
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setCredentials({
+      ...credentials,
+      [name]: value,
+    });
+  };
 
   const getList = async () => {
     const { accessToken } = await getAuthToken();
@@ -73,12 +97,15 @@ const ProductsType = () => {
     }
   };
 
-
   const handleClickOpen = () => {
-    setOpen(false);
+    console.log("ok");
   };
   const handleClose = () => {
     setOpen(false);
+    setCredentials({
+      tenDanhMuc: '',
+      moTa: '',
+    })
   };
   const handleOnChange = (e) => {
     console.log(e.target.files[0]);
@@ -140,10 +167,10 @@ const ProductsType = () => {
           <Box component="form" noValidate autoComplete="off" style={{ marginTop: '10px' }}>
             <Grid container spacing={3}>
               <Grid item xs={12}>
-                <TextField id="name" label="Name" fullWidth />
+                <TextField id="name" value={credentials.tenDanhMuc} onChange={handleChange} name='tenDanhMuc' label="Tên danh mục" fullWidth />
               </Grid>
-              <Grid item xs={9}>
-                <TextField id="name" label="Hình ảnh" fullWidth disabled value={file ? file?.name : ''} />
+              <Grid item xs={12}>
+                <TextField id="name" value={credentials.moTa} onChange={handleChange} name='moTa' label="Mô tả" fullWidth />
               </Grid>
             </Grid>
           </Box>
