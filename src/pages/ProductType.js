@@ -158,7 +158,7 @@ const ProductsType = () => {
         </Stack>
         <FormDialog
           open={open}
-          title="Thêm mới sản phẩm"
+          title="Thêm loại sản phẩm mới"
           ok="Thêm mới"
           close="Đóng"
           handleClickOpen={handleClickOpen}

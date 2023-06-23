@@ -48,15 +48,15 @@ export default function UsersPageV2() {
     { field: 'id', headerName: 'ID', width: 50, align: 'center' },
     {
       field: 'hoTenLot',
-      headerName: 'Họ tên lot',
-      minWidth: 100,
+      headerName: 'Họ tên lót',
+      minWidth: 150,
       align: 'center',
       flex: 1,
     },
     {
       field: 'ten',
       headerName: 'Tên',
-      width: 150,
+      width: 100,
       align: 'center',
       flex: 1
     },

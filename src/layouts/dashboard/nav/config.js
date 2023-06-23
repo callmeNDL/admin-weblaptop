@@ -25,18 +25,25 @@ const navConfig = [
     icon: icon('ic_laptop'),
   },
   {
+    title: 'Danh sách hóa đơn',
+    type: 'text',
+    subNav: [],
+    path: '/dashboard/listbill',
+    icon: icon('ic_ballot'),
+  },
+  {
     title: 'Nhập hàng',
     type: 'dropdown',
     subNav: [
       {
-        title: 'Nhà sản xuất',
+        title: 'Nhà cung cấp',
         type: 'text',
         subNav: [],
         path: '/',
         icon: icon('ic_ballot'),
       },
       {
-        title: 'Nhà cung cấp',
+        title: 'Nhà sản xuất',
         type: 'text',
         subNav: [],
         path: '/dashboard/brand',
@@ -45,7 +52,7 @@ const navConfig = [
         title: 'Phiếu nhập hàng',
         type: 'text',
         subNav: [],
-        path: '/',
+        path: '/dashboard/warehouse',
         icon: icon('ic_check'),
       }, {
         title: 'Loại sản phẩm',
@@ -73,7 +80,7 @@ const navConfig = [
         title: 'Banner',
         type: 'text',
         subNav: [],
-        path: '/dashboard/brand',
+        path: '/dashboard/banner',
         icon: icon('ic_input'),
       }
     ],

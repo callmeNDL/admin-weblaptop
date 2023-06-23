@@ -125,7 +125,7 @@ export default function ProductPageV2() {
               setOpen(true);
             }}
           >
-            New User
+            Thêm sản phẩm
           </Button>
         </Stack>
         <Stack direction="row" flexWrap="wrap-reverse" alignItems="center" justifyContent="flex-end" sx={{ mb: 5 }}>

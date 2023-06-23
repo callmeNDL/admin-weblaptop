@@ -17,6 +17,9 @@ import { getAuthToken } from './services/request/request-service';
 import ProductsType from './pages/ProductType';
 import Magazine from './pages/Magazine';
 import Promo from './pages/Promo';
+import ListBill from './pages/ListBill';
+import Banner from './pages/Banner';
+import Warehouse from './pages/Warehouse';
 
 // ----------------------------------------------------------------------
 
@@ -58,6 +61,12 @@ export default function Router() {
         { path: 'blog', element: <BlogPage /> },
         { path: 'magazine', element: <Magazine /> },
         { path: 'promo', element: <Promo /> },
+        { path: 'listbill', element:<ListBill/>},
+        { path: 'banner', element:<Banner/>},
+        { path: 'warehouse', element:<Warehouse/>},
+
+
+
       ],
     },
     {

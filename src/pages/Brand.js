@@ -148,7 +148,7 @@ export default function Brand() {
         </Stack>
         <FormDialog
           open={open}
-          title="Thêm mới sản phẩm"
+          title="Thêm nhà sản xuất mới"
           ok="Thêm mới"
           close="Đóng"
           handleClickOpen={handleClickOpen}
@@ -157,7 +157,7 @@ export default function Brand() {
           <Box component="form" noValidate autoComplete="off" style={{ marginTop: '10px' }}>
             <Grid container spacing={3}>
               <Grid item xs={12}>
-                <TextField id="name" label="Name" fullWidth />
+                <TextField id="name" label="Tên thương hiệu" fullWidth />
               </Grid>
               <Grid item xs={9}>
                 <TextField id="name" label="Hình ảnh" fullWidth disabled value={file ? file?.name : ''} />

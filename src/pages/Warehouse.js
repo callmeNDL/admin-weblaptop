@@ -15,21 +15,29 @@ import {
   } from '@mui/material';
   import { DataGrid } from '@mui/x-data-grid';
   import { DatePicker } from '@mui/x-date-pickers';
-  // components
-  import ActionButtons from '../components/action-button/ActionButtons';
+   // components
+   import ActionButtons from '../components/action-button/ActionButtons';
   
-  import Iconify from '../components/iconify';
-  import FormDialog from '../components/formDialog/FormDialog';
-  import { get, getAuthToken } from '../services/request/request-service';
-// ----------------------------------------------------------------------
+   import Iconify from '../components/iconify';
+   import FormDialog from '../components/formDialog/FormDialog';
+   import { get, getAuthToken } from '../services/request/request-service';
 
-  export default function Promo() {
+   // ----------------------------------------------------------------------
+
+   export default function Promo() {
     const [open, setOpen] = useState(false);
     const [file, setFile] = useState(null);
     const [dataList, setDataList] = useState([]);
+    const [selectedFile, setSelectedFile] = useState(null);
+      
+        const handleOnChangeUpload = (event) => {
+          const file = event.target.files[0];
+          setSelectedFile(file);
+        };
+
     const columns = [
       { field: 'id', headerName: 'ID', width: 90 },
-      { field: 'name', headerName: 'Tên', width: 150 },
+      { field: 'tenNhaCungCap', headerName: 'Tên nhà cung cấp', width: 150 },
       // {
       //   field: 'description',
       //   headerName: 'Mô tả',
@@ -49,9 +57,9 @@ import {
       //     </div>
       //   ),
       // },
-      { field: 'description', headerName: 'Mô tả', width: 360 },
+      { field: 'file', headerName: 'Tên tệp', width: 150 },
       { field: 'status', headerName: 'Trạng thái', width: 110 },
-      { field: 'closeDate', headerName: 'Thời hạn', width: 110 },
+      { field: 'createDate', headerName: 'Ngày tạo', width: 110 },
       
       {
         field: 'acb',
@@ -101,13 +109,21 @@ import {
       console.log(e.target.files[0]);
       setFile(e.target.files[0]);
     };
+    // function UploadFileExample() {
+    //     const [selectedFile, setSelectedFile] = useState(null);
+      
+    //     const handleOnChangeUpload = (event) => {
+    //       const file = event.target.files[0];
+    //       setSelectedFile(file);
+    //     };};
+      
   
     return (
       <>
         <Container>
           <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
             <Typography variant="h4" gutterBottom>
-              Tin tức
+              Phiếu nhập kho
             </Typography>
             <Button
               variant="contained"
@@ -116,7 +132,7 @@ import {
                 setOpen(true);
               }}
             >
-              Khuyến mãi mới
+              Phiếu nhập kho mới
             </Button>
           </Stack>
           <Stack direction="row" flexWrap="wrap-reverse" alignItems="center" justifyContent="flex-end" sx={{ mb: 5 }}>
@@ -139,7 +155,7 @@ import {
           </Stack>
           <FormDialog
           open={open}
-          title="Thêm mới khuyến mãi"
+          title="Thêm mới phiếu nhập kho"
           ok="Thêm mới"
           close="Đóng"
           handleClickOpen={handleClickOpen}
@@ -148,19 +164,36 @@ import {
           <Box component="form" noValidate autoComplete="off" style={{ marginTop: '10px' }}>
             <Grid container spacing={3}>
               <Grid item xs={12}>
-                <TextField id="name"  label="Tên danh mục" fullWidth />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField id="name"  label="Mô tả" fullWidth />
-              </Grid>
+                <TextField id="name"  label="Tên nhà cung cấp" fullWidth />
+              </Grid>   
               <Grid item xs={12} sm={6}>
-              <DatePicker
-                label="Thời hạn"
-                onChange={(view) => {
-                  ;
-                }}
-              />
-            </Grid>
+                <DatePicker
+                    label="Ngày tạo"
+                    onChange={(view) => {
+                    ;
+                    }}
+                />
+                </Grid>           
+                <Grid item xs={3}>
+                    <label htmlFor="raised-button-file">
+                    <Button variant="contained" component="span" style={{ height: '100%' }}>
+                        Upload File
+                    </Button>
+                    <input
+                        accept=".xlsx, .xls"
+                        id="raised-button-file"
+                        multiple
+                        type="file"
+                        style={{ display: 'none' }}
+                        onChange={handleOnChangeUpload}
+                    />
+                    </label>
+                    {selectedFile && (
+                    <p>Selected file: {selectedFile.name}</p>
+                    )}
+                </Grid>
+
+              
             </Grid>
           </Box>
         </FormDialog>
@@ -168,5 +201,3 @@ import {
       </>
     );
   }
-
-  
