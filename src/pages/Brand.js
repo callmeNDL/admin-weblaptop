@@ -12,7 +12,12 @@ import FormDialog from '../components/formDialog/FormDialog';
 export default function Brand() {
   const [open, setOpen] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
-
+  const [credentials, setCredentials] = useState({
+    tenDanhMuc: '',
+    moTa: '',
+  });
+  
+  const [selectData, setSelectData] = useState({});
   const [file, setFile] = useState(null);
 
   const columns = [
@@ -39,16 +44,23 @@ export default function Brand() {
       ),
     },
     {
-      field: 'acb',
+      field: 'action',
       headerName: 'Actions',
       minWidth: 100,
       align: 'center',
       renderCell: (params) =>
-        ActionButtons(
-          params.row,
-          () => { },
-          () => { }
-        ),
+        <ActionButtons
+          handleClickOpen={() => {
+            setSelectData(params.row)
+            setCredentials(params.row)
+            setOpen(true)
+          }}
+          handleClickDelOpen={() => {
+            setSelectData(params.row)
+          }}
+
+        />
+
     },
   ];
 
