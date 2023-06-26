@@ -25,9 +25,15 @@ export default function ListBill() {
     const [open, setOpen] = useState(false);
     const [file, setFile] = useState(null);
     const [dataList, setDataList] = useState([]);
+    const [selectedFile, setSelectedFile] = useState(null);
+      
+        const handleOnChangeUpload = (event) => {
+          const file = event.target.files[0];
+          setSelectedFile(file);
+        };
     const columns = [
       { field: 'id', headerName: 'ID', width: 90 },
-      { field: 'userName', headerName: 'Tên khách hàng', width: 150 },
+      { field: 'userName', headerName: 'Tên khách hàng', width: 180 },
       // {
       //   field: 'description',
       //   headerName: 'Chi tiết hóa đơn',
@@ -47,18 +53,19 @@ export default function ListBill() {
       //     </div>
       //   ),
       // },
-      { field: 'description', headerName: 'Chi tiết hóa đơn', width: 400 },
-      { field: 'closeDate', headerName: 'Thời hạn', width: 110 },
+      { field: 'description', headerName: 'Chi tiết hóa đơn', width: 300 },
+      // { field: 'closeDate', headerName: 'Thời hạn', width: 110 },
+      { field: 'address', headerName: 'Địa chỉ', width: 110 },
      
       {
         field: 'total',
         headerName: 'Tổng tiền',
         type: 'number',
-        minWidth: 90,
+        minWidth: 160,
         align: 'center',
       },
       {
-        field: 'status',
+        field: 'active  ',
         headerName: 'Trạng thái',
         sortable: false,
         minWidth: 100,
@@ -78,7 +85,40 @@ export default function ListBill() {
       },
     ];
   
-    const rows = []
+    const rows = [
+      {
+        id: 1,
+        userName: 'Lê Hoàng Anh',
+        description:'Chi tiết hóa đơn',
+        address: '180 cao Lỗ, Phường 4, quận 8, TPHCM',
+        active: true,
+        total: '17.000.000vnd',
+      },
+      {
+        id: 2,
+        userName: 'Nguyễn Hoàng Minh',
+        description:'Chi tiết hóa đơn',
+        address: '159 Nguyễn Thị Minh Khai, phường Phạm Ngũ Lão, quận 1, TPHCM',
+        active: true,
+        total: '32.000.000vnd',
+      },
+      {
+        id: 3,
+        userName: 'Ngô Hồng Hải',
+        description:'Chi tiết hóa đơn',
+        address: '55B Trần Quang Khải, phường Tân Định, quận 1 TPHCM',
+        active: true,
+        total: '18.000.000vnd',
+      },
+      {
+        id: 4,
+        userName: 'Nguyễn Phúc Thành',
+        description:'Chi tiết hóa đơn',
+        address: '220 Trần Quang Khải, phường Tân Định, quận 1 TPHCM',
+        active: true,
+        total: '15.000.000vnd',
+      },
+    ]
   
     useEffect(() => {
       getList()
@@ -159,89 +199,49 @@ export default function ListBill() {
             <Box component="form" noValidate autoComplete="off">
               <Grid container spacing={2}>
                 <Grid item xs={12}>
-                  <TextField id="name" label="Name" multiline rows={2} fullWidth />
+                  <TextField id="name" label="Tên khách hàng" multiline  fullWidth />
+                  {/* rows={2} */}
                 </Grid>
                 <Grid item xs={6}>
-                  <TextField id="price" label="Giá" fullWidth />
+                  <TextField id="diaChi" label="Địa chỉ" fullWidth />
                 </Grid>
                 <Grid item xs={6}>
-                  <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">RAM</InputLabel>
-                    <Select labelId="demo-simple-select-label" id="demo-simple-select" label="RAM">
-                      <MenuItem value={10}>Apple</MenuItem>
-                      <MenuItem value={20}>MSI</MenuItem>
-                      <MenuItem value={30}>DELL</MenuItem>
-                    </Select>
-                  </FormControl>
+                  <TextField id="soDienThoai" label="Số điện thoại" fullWidth />
                 </Grid>
                 <Grid item xs={6}>
-                  <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">Thương hiệu</InputLabel>
-                    <Select labelId="demo-simple-select-label" id="demo-simple-select" label="Thương hiệu">
-                      <MenuItem value={10}>Apple</MenuItem>
-                      <MenuItem value={20}>MSI</MenuItem>
-                      <MenuItem value={30}>DELL</MenuItem>
-                    </Select>
-                  </FormControl>
+                  <TextField id="ghiChu" label="Ghi chú" fullWidth />
                 </Grid>
                 <Grid item xs={6}>
-                  <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">CPU</InputLabel>
-                    <Select labelId="demo-simple-select-label" id="demo-simple-select" label="CPU">
-                      <MenuItem value={10}>Apple</MenuItem>
-                      <MenuItem value={20}>MSI</MenuItem>
-                      <MenuItem value={30}>DELL</MenuItem>
-                    </Select>
-                  </FormControl>
+                  <TextField id="trangThaiThanhToan" label="Thanh toán" fullWidth />
+                </Grid>
+                
+                <Grid item xs={6}>
+                  <TextField id="soTienTraGop" label="Sô tiền trả góp" fullWidth />
                 </Grid>
                 <Grid item xs={6}>
-                  <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">Thương hiệu</InputLabel>
-                    <Select labelId="demo-simple-select-label" id="demo-simple-select" label="Thương hiệu">
-                      <MenuItem value={10}>Apple</MenuItem>
-                      <MenuItem value={20}>MSI</MenuItem>
-                      <MenuItem value={30}>DELL</MenuItem>
-                    </Select>
-                  </FormControl>
+                  <TextField id="soTienTraTruoc" label="Số tiền trả trước" fullWidth />
                 </Grid>
                 <Grid item xs={6}>
-                  <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">Đồ họa</InputLabel>
-                    <Select labelId="demo-simple-select-label" id="demo-simple-select" label="Đồ họa">
-                      <MenuItem value={10}>Apple</MenuItem>
-                      <MenuItem value={20}>MSI</MenuItem>
-                      <MenuItem value={30}>DELL</MenuItem>
-                    </Select>
-                  </FormControl>
+                  <TextField id="soTienTraGop" label="Số tiền trả góp" fullWidth />
                 </Grid>
-                <Grid item xs={6}>
-                  <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">Đồ họa</InputLabel>
-                    <Select labelId="demo-simple-select-label" id="demo-simple-select" label="Đồ họa">
-                      <MenuItem value={10}>Apple</MenuItem>
-                      <MenuItem value={20}>MSI</MenuItem>
-                      <MenuItem value={30}>DELL</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={6}>
-                  <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">Lưu trữ</InputLabel>
-                    <Select labelId="demo-simple-select-label" id="demo-simple-select" label="Lưu trữ">
-                      <MenuItem value={10}>Apple</MenuItem>
-                      <MenuItem value={20}>MSI</MenuItem>
-                      <MenuItem value={30}>DELL</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={9}>
-                  <TextField id="name" label="Hình ảnh" fullWidth disabled value={file ? file?.name : ''} />
-                </Grid>
-                <Grid item xs={3}>
-                  <Button variant="contained" component="label" style={{ height: '100%' }}>
-                    Upload File
-                    <input type="file" hidden onChange={handleOnChange} />
-                  </Button>
+                
+                <Grid item xs={12}>
+                    <label htmlFor="raised-button-file">
+                    <Button variant="contained" component="span" style={{ height: '100%', width: 260 }}>
+                        Upload File chi tiết hóa đơn.
+                    </Button>
+                    <input
+                        accept=".xlsx, .xls"
+                        id="raised-button-file"
+                        multiple
+                        type="file"
+                        style={{ display: 'none' }}
+                        onChange={handleOnChangeUpload}
+                    />
+                    </label>
+                    {selectedFile && (
+                    <p>Selected file: {selectedFile.name}</p>
+                    )}
                 </Grid>
               </Grid>
             </Box>

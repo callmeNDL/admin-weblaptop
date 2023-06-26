@@ -27,25 +27,12 @@ export default function Magazine() {
     const [dataList, setDataList] = useState([]);
     const columns = [
       { field: 'id', headerName: 'ID', width: 90 },
-      { field: 'brand', headerName: 'Tiêu đề', width: 110 },
+      { field: 'title', headerName: 'Tiêu đề', width: 110 },
       {
-        field: 'name',
+        field: 'content',
         headerName: 'Nội dung',
         minWidth: 400,
         align: 'center',
-        flex: 1,
-        renderCell: (params) => (
-          <div style={{ width: 450, display: 'flex', alignItems: 'center', whiteSpace: 'normal', gap: 10 }}>
-            <img
-              src={params.row && params.row?.hinhAnhs[0]?.path}
-              alt="img-product-cart"
-              style={{ width: '80px', height: '80px', objectFit: 'cover' }}
-            />
-            <div>
-              <div>{params.row.name}</div>
-            </div>
-          </div>
-        ),
       },
       
       
@@ -63,7 +50,18 @@ export default function Magazine() {
       },
     ];
   
-    const rows = []
+    const rows = [
+      {
+        id: 1,
+        title: 'MacBook Air 15 inch lên kệ Việt Nam giữa tháng 7',
+        content: 'Apple đang thuyết phục người dùng Việt Nam, chuyển sang dùng MacOS.',
+      },
+      {
+        id: 2,
+        title: '8 tính năng ảnh mới cho MacOS 17',
+        content: 'Nhận dạng thú cưng, cắt ảnh nhanh, cắt chủ thể thành sticker... là những tính năng mới về hình ảnh',
+      },
+    ]
   
     useEffect(() => {
       getList()
@@ -142,92 +140,20 @@ export default function Magazine() {
             handleClose={handleClose}
           >
             <Box component="form" noValidate autoComplete="off">
-              <Grid container spacing={2}>
+              <Grid container spacing={2}>                
                 <Grid item xs={12}>
-                  <TextField id="name" label="Name" multiline rows={2} fullWidth />
+                  <TextField id="title" label="Tiêu đề" fullWidth />
                 </Grid>
-                <Grid item xs={6}>
-                  <TextField id="price" label="Giá" fullWidth />
+                <Grid item xs={12}>
+                  <TextField id="content" label="Nội dung" multiline rows={2} fullWidth />
                 </Grid>
-                <Grid item xs={6}>
-                  <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">RAM</InputLabel>
-                    <Select labelId="demo-simple-select-label" id="demo-simple-select" label="RAM">
-                      <MenuItem value={10}>Apple</MenuItem>
-                      <MenuItem value={20}>MSI</MenuItem>
-                      <MenuItem value={30}>DELL</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={6}>
-                  <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">Thương hiệu</InputLabel>
-                    <Select labelId="demo-simple-select-label" id="demo-simple-select" label="Thương hiệu">
-                      <MenuItem value={10}>Apple</MenuItem>
-                      <MenuItem value={20}>MSI</MenuItem>
-                      <MenuItem value={30}>DELL</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={6}>
-                  <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">CPU</InputLabel>
-                    <Select labelId="demo-simple-select-label" id="demo-simple-select" label="CPU">
-                      <MenuItem value={10}>Apple</MenuItem>
-                      <MenuItem value={20}>MSI</MenuItem>
-                      <MenuItem value={30}>DELL</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={6}>
-                  <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">Thương hiệu</InputLabel>
-                    <Select labelId="demo-simple-select-label" id="demo-simple-select" label="Thương hiệu">
-                      <MenuItem value={10}>Apple</MenuItem>
-                      <MenuItem value={20}>MSI</MenuItem>
-                      <MenuItem value={30}>DELL</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={6}>
-                  <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">Đồ họa</InputLabel>
-                    <Select labelId="demo-simple-select-label" id="demo-simple-select" label="Đồ họa">
-                      <MenuItem value={10}>Apple</MenuItem>
-                      <MenuItem value={20}>MSI</MenuItem>
-                      <MenuItem value={30}>DELL</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={6}>
-                  <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">Đồ họa</InputLabel>
-                    <Select labelId="demo-simple-select-label" id="demo-simple-select" label="Đồ họa">
-                      <MenuItem value={10}>Apple</MenuItem>
-                      <MenuItem value={20}>MSI</MenuItem>
-                      <MenuItem value={30}>DELL</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={6}>
-                  <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">Lưu trữ</InputLabel>
-                    <Select labelId="demo-simple-select-label" id="demo-simple-select" label="Lưu trữ">
-                      <MenuItem value={10}>Apple</MenuItem>
-                      <MenuItem value={20}>MSI</MenuItem>
-                      <MenuItem value={30}>DELL</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={9}>
-                  <TextField id="name" label="Hình ảnh" fullWidth disabled value={file ? file?.name : ''} />
-                </Grid>
-                <Grid item xs={3}>
+                
+                {/* <Grid item xs={3}>
                   <Button variant="contained" component="label" style={{ height: '100%' }}>
                     Upload File
                     <input type="file" hidden onChange={handleOnChange} />
                   </Button>
-                </Grid>
+                </Grid> */}
               </Grid>
             </Box>
           </FormDialog>

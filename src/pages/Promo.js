@@ -49,8 +49,8 @@ import {
       //     </div>
       //   ),
       // },
-      { field: 'description', headerName: 'Mô tả', width: 360 },
-      { field: 'status', headerName: 'Trạng thái', width: 110 },
+      { field: 'description', headerName: 'Mô tả', width: 400 },
+      { field: 'percentDiscoun', headerName: 'Số lượng', width: 100 },
       { field: 'closeDate', headerName: 'Thời hạn', width: 110 },
       
       {
@@ -67,7 +67,29 @@ import {
       },
     ];
   
-    const rows = []
+    const rows = [
+      {
+        id:1,
+        name: 'Balo laptop Targus',
+        description:'Balo laptop Targus 15.6 TSB883 Black (Safire) (Quà tặng)',
+        percentDiscoun: 15,
+        closeDate: '18-07-2023',
+      },
+      {
+        id:2,
+        name: 'Balo laptop TargusLoa Active FiiO SP3',
+        description:'Loa Active FiiO SP3 được trang bị dải đèn LED có thể nhấp nháy theo nhạc(Quà tặng)',
+        percentDiscoun: 10,
+        closeDate: '18-08-2023',
+      },
+      {
+        id:3,
+        name: 'Tai nghe kiểm âm Beyerdynamic DT770 Pro',
+        description:'Beyerdynamic DT 770 Pro dành cho DJ chỉnh nhạc, không tạp âm(Quà tặng)',
+        percentDiscoun: 1,
+        closeDate: '20-08-2023',
+      },
+    ]
   
     useEffect(() => {
       getList()
@@ -107,7 +129,7 @@ import {
         <Container>
           <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
             <Typography variant="h4" gutterBottom>
-              Tin tức
+              Khuyến mãi
             </Typography>
             <Button
               variant="contained"
@@ -148,7 +170,7 @@ import {
           <Box component="form" noValidate autoComplete="off" style={{ marginTop: '10px' }}>
             <Grid container spacing={3}>
               <Grid item xs={12}>
-                <TextField id="name"  label="Tên danh mục" fullWidth />
+                <TextField id="name"  label="Tên danh mục khuyến mãi" fullWidth />
               </Grid>
               <Grid item xs={12}>
                 <TextField id="name"  label="Mô tả" fullWidth />

@@ -38,28 +38,10 @@ import {
     const columns = [
       { field: 'id', headerName: 'ID', width: 90 },
       { field: 'tenNhaCungCap', headerName: 'Tên nhà cung cấp', width: 150 },
-      // {
-      //   field: 'description',
-      //   headerName: 'Mô tả',
-      //   minWidth: 360,
-      //   align: 'center',
-      //   flex: 1,
-      //   renderCell: (params) => (
-      //     <div style={{ width: 450, display: 'flex', alignItems: 'center', whiteSpace: 'normal', gap: 10 }}>
-      //       <img
-      //         src={params.row && params.row?.hinhAnhs[0]?.path}
-      //         alt="img-product-cart"
-      //         style={{ width: '80px', height: '80px', objectFit: 'cover' }}
-      //       />
-      //       <div>
-      //         <div>{params.row.name}</div>
-      //       </div>
-      //     </div>
-      //   ),
-      // },
+      
       { field: 'file', headerName: 'Tên tệp', width: 150 },
-      { field: 'status', headerName: 'Trạng thái', width: 110 },
-      { field: 'createDate', headerName: 'Ngày tạo', width: 110 },
+      // { field: 'status', headerName: 'Trạng thái', width: 110 },
+      { field: 'createDate', headerName: 'Ngày nhập', width: 110 },
       
       {
         field: 'acb',
@@ -75,7 +57,26 @@ import {
       },
     ];
   
-    const rows = []
+    const rows = [
+      {
+        id: 1,
+        tenNhaCungCap: 'Công ty CellPhones',
+        file: 'Cellphones.xlsx',
+        createDate: '10-04-2023',
+      },
+      {
+        id: 2,
+        tenNhaCungCap: 'Công ty Viễn Thông A',
+        file: 'VienThongA.xlsx',
+        createDate: '28-05-2023',
+      },
+      {
+        id: 3,
+        tenNhaCungCap: 'Công ty GearVN',
+        file: 'GearVn.xlsx',
+        createDate: '25-06-2023',
+      }
+    ]
   
     useEffect(() => {
       getList()
@@ -164,7 +165,7 @@ import {
           <Box component="form" noValidate autoComplete="off" style={{ marginTop: '10px' }}>
             <Grid container spacing={3}>
               <Grid item xs={12}>
-                <TextField id="name"  label="Tên nhà cung cấp" fullWidth />
+                <TextField id="name"  label="Tên nhà cung cấp của phiếu" fullWidth />
               </Grid>   
               <Grid item xs={12} sm={6}>
                 <DatePicker
@@ -177,7 +178,7 @@ import {
                 <Grid item xs={3}>
                     <label htmlFor="raised-button-file">
                     <Button variant="contained" component="span" style={{ height: '100%' }}>
-                        Upload File
+                        Upload File nhập.
                     </Button>
                     <input
                         accept=".xlsx, .xls"

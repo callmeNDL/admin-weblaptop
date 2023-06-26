@@ -20,6 +20,7 @@ import Promo from './pages/Promo';
 import ListBill from './pages/ListBill';
 import Banner from './pages/Banner';
 import Warehouse from './pages/Warehouse';
+import Company from './pages/Company';
 
 // ----------------------------------------------------------------------
 
@@ -64,6 +65,7 @@ export default function Router() {
         { path: 'listbill', element:<ListBill/>},
         { path: 'banner', element:<Banner/>},
         { path: 'warehouse', element:<Warehouse/>},
+        { path: 'company', element:<Company/>},
 
 
 

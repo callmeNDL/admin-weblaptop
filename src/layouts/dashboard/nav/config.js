@@ -39,7 +39,7 @@ const navConfig = [
         title: 'Nhà cung cấp',
         type: 'text',
         subNav: [],
-        path: '/',
+        path: '/dashboard/company',
         icon: icon('ic_ballot'),
       },
       {
@@ -129,13 +129,13 @@ const navConfig = [
   //   subNav: [],
   //   icon: icon('ic_blog'),
   // },
-  {
-    title: 'login',
-    path: '/login',
-    type: 'text',
-    subNav: [],
-    icon: icon('ic_lock'),
-  },
+  // {
+  //   title: 'login',
+  //   path: '/login',
+  //   type: 'text',
+  //   subNav: [],
+  //   icon: icon('ic_lock'),
+  // },
   {
     title: 'Not found',
     type: 'text',

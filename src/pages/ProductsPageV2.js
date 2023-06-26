@@ -28,31 +28,31 @@ export default function ProductPageV2() {
   const [dataList, setDataList] = useState([]);
   const columns = [
     { field: 'id', headerName: 'ID', width: 90 },
+    { field: 'name', headerName: 'Tên sản phẩm', width: 340 },
     {
-      field: 'name',
-      headerName: 'Tên sản phẩm',
-      minWidth: 400,
+      field: 'image',
+      headerName: 'Hinh ảnh',
+      minWidth: 150,
       align: 'center',
       flex: 1,
       renderCell: (params) => (
-        <div style={{ width: 450, display: 'flex', alignItems: 'center', whiteSpace: 'normal', gap: 10 }}>
+        <div style={{ width: 550, display: 'flex', alignItems: 'center', whiteSpace: 'normal', gap: 10 }}>
           <img
             src={params.row && params.row?.hinhAnhs[0]?.path}
             alt="img-product-cart"
-            style={{ width: '80px', height: '80px', objectFit: 'cover' }}
+            style={{ width: '100px', height: '100px', objectFit: 'cover' }}
           />
-          <div>
-            <div>{params.row.name}</div>
-          </div>
+          
         </div>
       ),
     },
+    
     { field: 'brand', headerName: 'Thương hiệu', width: 110 },
     {
       field: 'price',
       headerName: 'Giá',
       type: 'number',
-      minWidth: 90,
+      minWidth: 110,
       align: 'center',
     },
     {
@@ -76,7 +76,60 @@ export default function ProductPageV2() {
     },
   ];
 
-  const rows = []
+  const rows = [
+    {
+      id: 1,
+      name: 'Laptop ASUS Vivobook X515EA-BQ2351W',
+      hinhAnhs: [
+        {
+          path: 'https://lh3.googleusercontent.com/7rvuPBx-BS-q4QXqH1xZF7dLIjpi0__Fw_XV1_qw4GaXepR63JBRKOEOJMwSTL2sui58w_OCuzSpdiiI7BArT27mWduE6Asu=w230-rw',
+        },
+      ],
+      brand: 'ASUS',
+      price: '13.990.000vnd',
+      active: true,
+      count: 15,
+    },
+    {
+      id: 2,
+      name: 'Laptop Dell Inspiron 14 5430',
+      hinhAnhs: [
+        {
+          path: 'https://lh3.googleusercontent.com/3rfhB0Gnveqf-bm4tPDcfi3YWi3Pa9cF3ZSTtVf-B4x0uf9_uRTM4eycyMjKbdt8CWAlOtXeJlYZbRXkh_mjbkpg_GMY5HdK=w1000-rw',
+        },
+      ],
+      brand: 'DELL',
+      price: '26.000.000vnd',
+      active: true,
+      count: 8,
+    }, 
+    {
+      id: 3,
+      name: 'MacBook Air 2020 13.3 inch',
+      hinhAnhs: [
+        {
+          path: 'https://lh3.googleusercontent.com/Ezh1zisXToaMPP30pXE50dnotXpEyxnGsYpbd6uZc6jEWRWhMrMY2EDuXNcWPhw4nfcwwC-mGGVEkkRtRSJE0P3hRPuvCjw=w500-rw',
+        },
+      ],
+      brand: 'MacBook',
+      price: '18.590.000vnd',
+      active: true,
+      count: 16,
+    },
+    {
+      id: 3,
+      name: 'Laptop ASUS TUF Gaming FX706HC',
+      hinhAnhs: [
+        {
+          path: 'https://lh3.googleusercontent.com/T1mBMdtFBtyQs9iLByq1NT4UlKWPa3Wa9W6uBkPC5mLOH7LFpeNS0dcs-Jvofd0QqJoB0WOhLR6Mw5BKaWBkvNtZkvO1hmXs=w500-rw',
+        },
+      ],
+      brand: 'ASUS',
+      price: '20.090.000vnd',
+      active: true,
+      count: 22,
+    },
+  ]
 
   useEffect(() => {
     getList()
@@ -157,7 +210,7 @@ export default function ProductPageV2() {
           <Box component="form" noValidate autoComplete="off">
             <Grid container spacing={2}>
               <Grid item xs={12}>
-                <TextField id="name" label="Name" multiline rows={2} fullWidth />
+                <TextField id="name" label="Name" multiline fullWidth />
               </Grid>
               <Grid item xs={6}>
                 <TextField id="price" label="Giá" fullWidth />
