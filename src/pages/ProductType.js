@@ -2,12 +2,12 @@ import { useEffect, useState } from 'react';
 // @mui
 import { Stack, Button, Container, Typography, TextField, Box, Grid } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
+import { enqueueSnackbar } from 'notistack';
 // components
 import ActionButtons from '../components/action-button/ActionButtons';
-
 import Iconify from '../components/iconify';
 import FormDialog from '../components/formDialog/FormDialog';
-import { get, getAuthToken } from '../services/request/request-service';
+import { Delete, get, getAuthToken, post, put } from '../services/request/request-service';
 
 // ----------------------------------------------------------------------
 const ProductsType = () => {
@@ -20,7 +20,6 @@ const ProductsType = () => {
   });
   const [file, setFile] = useState(null);
   const [selectData, setSelectData] = useState({});
-
 
   const columns = [
     { field: 'id', headerName: 'ID', width: 90 },
@@ -47,29 +46,29 @@ const ProductsType = () => {
       headerName: 'Actions',
       minWidth: 100,
       align: 'center',
-      renderCell: (params) =>
+      renderCell: (params) => (
         <ActionButtons
           handleClickOpen={() => {
-            setSelectData(params.row)
-            setCredentials(params.row)
-            setOpen(true)
+            setSelectData(params.row);
+            setCredentials(params.row);
+            setOpen(true);
           }}
           handleClickDelOpen={() => {
-            setSelectData(params.row)
+            setSelectData(params.row);
+            setOpenDelete(true)
           }}
-
         />
-
+      ),
     },
   ];
 
   useEffect(() => {
-    getList()
+    getList();
     setCredentials({
       tenDanhMuc: '',
       moTa: '',
-    })
-  }, [])
+    });
+  }, []);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -83,13 +82,16 @@ const ProductsType = () => {
     const { accessToken } = await getAuthToken();
     if (accessToken) {
       try {
-        const res = await get('loaisanpham')
+        const res = await get('loaisanpham');
         if (res && res.status === 'OK') {
-          setDataList(res.data.map((item) => {
-            return {
-              ...item, ProductsCount: item.sanPhams.length
-            }
-          }))
+          setDataList(
+            res.data.map((item) => {
+              return {
+                ...item,
+                ProductsCount: item.sanPhams.length,
+              };
+            })
+          );
         }
       } catch (error) {
         console.log(error);
@@ -98,14 +100,14 @@ const ProductsType = () => {
   };
 
   const handleClickOpen = () => {
-    console.log("ok");
+    console.log('ok');
   };
   const handleClose = () => {
     setOpen(false);
     setCredentials({
       tenDanhMuc: '',
       moTa: '',
-    })
+    });
   };
   const handleOnChange = (e) => {
     console.log(e.target.files[0]);
@@ -114,12 +116,75 @@ const ProductsType = () => {
   const handeEdit = () => {
     setOpen(true);
   };
-  const handleDeleteClickOpen = () => {
-    console.log('acb');
-    setOpenDelete(false);
+  const handleDelete = async() => {
+    try {
+      const { accessToken } = await getAuthToken();
+      if (accessToken && selectData) {
+        const res = await Delete (`loaisanpham/${selectData.id}`,
+          {
+            headers: {
+              Authorization: `Token ${accessToken}`,
+            },
+          })
+          if (res.status === 'OK') {
+            getList();
+            enqueueSnackbar('Xóa thành công', { variant: 'success' });
+            handleDeleteClose()
+          } else {
+            enqueueSnackbar('Xóa thất bại', { variant: 'error' });
+          }
+      }
+
+    } catch (error) {
+      console.log(error);
+    }
   };
   const handleDeleteClose = () => {
     setOpenDelete(false);
+  };
+
+  const handleSubmit = async () => {
+    const { accessToken } = await getAuthToken();
+    if (accessToken && credentials.moTa !== '' && credentials.tenDanhMuc !== '') {
+      if (!selectData) {
+        // selectData truong hop khong co chon data thi n la api them
+        if (credentials ) {
+          const res = await post('loaisanpham', credentials, {
+            headers: {
+              Authorization: `Token ${accessToken}`,
+            },
+          });
+          if (res.status === 'OK') {
+            getList();
+            setOpen(false);
+            enqueueSnackbar('Thêm thành công', { variant: 'success' });
+            handleClose();
+          } else {
+            enqueueSnackbar('Thêm thất bại', { variant: 'error' });
+          }
+        }
+      } else {
+        const res = await put(
+          `loaisanpham/${selectData.id}`,
+          {
+            tenDanhMuc: credentials.tenDanhMuc,
+            moTa: credentials.moTa,
+          },
+          {
+            headers: {
+              Authorization: `Token ${accessToken}`,
+            },
+          }
+        );
+        if (res.status === 'OK') {
+          getList();
+          enqueueSnackbar('Cập nhật thành công', { variant: 'success' });
+          handleClose();
+        } else {
+          enqueueSnackbar('Cập nhật thất bại', { variant: 'error' });
+        }
+      }
+    }
   };
   return (
     <>
@@ -158,19 +223,34 @@ const ProductsType = () => {
         </Stack>
         <FormDialog
           open={open}
-          title="Thêm loại sản phẩm mới"
-          ok="Thêm mới"
+          title={`${selectData ? 'Cập nhật' : 'Thêm mới'} loại sản phẩm`}
+          ok={`${selectData ? 'Cập nhật' : 'Thêm mới'}`}
           close="Đóng"
           handleClickOpen={handleClickOpen}
           handleClose={handleClose}
+          handleSubmit={handleSubmit}
         >
           <Box component="form" noValidate autoComplete="off" style={{ marginTop: '10px' }}>
             <Grid container spacing={3}>
               <Grid item xs={12}>
-                <TextField id="name" value={credentials.tenDanhMuc} onChange={handleChange} name='tenDanhMuc' label="Tên danh mục" fullWidth />
+                <TextField
+                  id="name"
+                  value={credentials.tenDanhMuc}
+                  onChange={handleChange}
+                  name="tenDanhMuc"
+                  label="Tên danh mục"
+                  fullWidth
+                />
               </Grid>
               <Grid item xs={12}>
-                <TextField id="name" value={credentials.moTa} onChange={handleChange} name='moTa' label="Mô tả" fullWidth />
+                <TextField
+                  id="name"
+                  value={credentials.moTa}
+                  onChange={handleChange}
+                  name="moTa"
+                  label="Mô tả"
+                  fullWidth
+                />
               </Grid>
             </Grid>
           </Box>
@@ -180,8 +260,10 @@ const ProductsType = () => {
           title="Bạn có chắc chắn muốn xoá không ?"
           ok="Xoá"
           close="Đóng"
-          handleClickOpen={handleDeleteClickOpen}
-          handleClose={handleDeleteClickOpen}
+          handleClickOpen={()=>{}}
+          handleClose={handleDeleteClose}
+          handleSubmit={handleDelete}
+
         >
           <Box component="form" noValidate autoComplete="off" style={{ marginTop: '10px' }}>
             <></>
@@ -190,6 +272,6 @@ const ProductsType = () => {
       </Container>
     </>
   );
-}
+};
 
-export default ProductsType
+export default ProductsType;
