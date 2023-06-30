@@ -16,14 +16,16 @@ import {
 } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
 import { enqueueSnackbar } from 'notistack';
-
+import { Tag } from '@mui/icons-material';
 import { DataGrid } from '@mui/x-data-grid';
 import Iconify from '../components/iconify';
-
 import FormDialog from '../components/formDialog/FormDialog';
 import { Delete, get, getAuthToken, post, put } from '../services/request/request-service';
 import ActionButtons from '../components/action-button/ActionButtons';
 import FormDialogSubmit from '../components/formDialog/FormDialogSubmit';
+import { enumData } from '../constant/enumData';
+import SearchTable from '../components/search/SeachTable';
+
 // ----------------------------------------------------------------------
 
 export default function Company() {
@@ -57,6 +59,17 @@ export default function Company() {
       type: 'number',
       minWidth: 160,
       align: 'center',
+    },
+    {
+      field: 'active',
+      headerName: 'Trạng thái',
+      type: 'number',
+      minWidth: 160,
+      renderCell: (params) => (
+        <div className={`tag tag-${params.row.active ? 'active' : 'block'}`}>
+          {params.row.active ? 'Hoạt động' : 'Khóa'}
+        </div>
+      ),
     },
     {
       field: 'acb',
@@ -114,7 +127,8 @@ export default function Company() {
   };
 
   const onSubmit = async (data) => {
-    if (!selectData) {
+    console.log(selectData, 'selectData');
+    if (!selectData && !selectData?.id) {
       // truong hop nay la không có seledata nghĩa là mình chưa chọn thằng nào nên n hiểu là taọ mơis
       try {
         if (data) {
@@ -135,10 +149,12 @@ export default function Company() {
           }
         }
       } catch (error) {
-        enqueueSnackbar('Cập nhật thất bại', { variant: 'error' });
+        enqueueSnackbar('Thêm thất bại', { variant: 'error' });
         console.log(error);
       }
     } else {
+      console.log('AaaAA');
+
       // ngược lại nếu đẫ chọn 1 thằng rồi thì la cap nhật
       try {
         if (data) {
@@ -192,8 +208,6 @@ export default function Company() {
     setSelectData('');
   };
 
-  console.log(selectData, 'ADAD');
-
   return (
     <>
       <Container>
@@ -211,6 +225,9 @@ export default function Company() {
             Thêm nhà cung cấp
           </Button>
         </Stack>
+        <SearchTable>
+          <TextField name="tenNhaCungCap" label="Tên nhà cung cấp" />
+        </SearchTable>
         <Stack direction="row" flexWrap="wrap-reverse" alignItems="center" justifyContent="flex-end" sx={{ mb: 5 }}>
           <div style={{ height: 400, width: '100%' }}>
             <DataGrid
@@ -229,7 +246,7 @@ export default function Company() {
             />
           </div>
         </Stack>
-        <FormDialogSubmit open={open} title="Cập nhật nhà cung cấp">
+        <FormDialogSubmit open={open} title={`${selectData?.id ? 'Cập nhật' : 'Thêm mới'} nhà cung cấp`}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
@@ -285,8 +302,8 @@ export default function Company() {
         <FormDialog
           open={openDelete}
           title="Bạn có chắc chắn muốn khóa không ?"
-          ok="Xoá"
-          close="Khóa"
+          ok="Khóa"
+          close="Đóng"
           handleClickOpen={() => {}}
           handleClose={handleDeleteClose}
           handleSubmit={handleDelete}
@@ -297,6 +314,5 @@ export default function Company() {
         </FormDialog>
       </Container>
     </>
-  );// thiếu form thêm, xóa cần được hiện ra
+  ); // thiếu form thêm, xóa cần được hiện ra
 }
-

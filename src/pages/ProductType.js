@@ -8,18 +8,19 @@ import ActionButtons from '../components/action-button/ActionButtons';
 import Iconify from '../components/iconify';
 import FormDialog from '../components/formDialog/FormDialog';
 import { Delete, get, getAuthToken, post, put } from '../services/request/request-service';
+import SearchTable from '../components/search/SeachTable';
 
 // ----------------------------------------------------------------------
 const ProductsType = () => {
   const [open, setOpen] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
+  const [selectData, setSelectData] = useState({});
   const [dataList, setDataList] = useState([]);
   const [credentials, setCredentials] = useState({
     tenDanhMuc: '',
     moTa: '',
   });
   const [file, setFile] = useState(null);
-  const [selectData, setSelectData] = useState({});
 
   const columns = [
     { field: 'id', headerName: 'ID', width: 90 },
@@ -55,7 +56,7 @@ const ProductsType = () => {
           }}
           handleClickDelOpen={() => {
             setSelectData(params.row);
-            setOpenDelete(true)
+            setOpenDelete(true);
           }}
         />
       ),
@@ -116,25 +117,23 @@ const ProductsType = () => {
   const handeEdit = () => {
     setOpen(true);
   };
-  const handleDelete = async() => {
+  const handleDelete = async () => {
     try {
       const { accessToken } = await getAuthToken();
       if (accessToken && selectData) {
-        const res = await Delete (`loaisanpham/${selectData.id}`,
-          {
-            headers: {
-              Authorization: `Token ${accessToken}`,
-            },
-          })
-          if (res.status === 'OK') {
-            getList();
-            enqueueSnackbar('Xóa thành công', { variant: 'success' });
-            handleDeleteClose()
-          } else {
-            enqueueSnackbar('Xóa thất bại', { variant: 'error' });
-          }
+        const res = await Delete(`loaisanpham/${selectData.id}`, {
+          headers: {
+            Authorization: `Token ${accessToken}`,
+          },
+        });
+        if (res.status === 'OK') {
+          getList();
+          enqueueSnackbar('Xóa thành công', { variant: 'success' });
+          handleDeleteClose();
+        } else {
+          enqueueSnackbar('Xóa thất bại', { variant: 'error' });
+        }
       }
-
     } catch (error) {
       console.log(error);
     }
@@ -148,7 +147,7 @@ const ProductsType = () => {
     if (accessToken && credentials.moTa !== '' && credentials.tenDanhMuc !== '') {
       if (!selectData) {
         // selectData truong hop khong co chon data thi n la api them
-        if (credentials ) {
+        if (credentials) {
           const res = await post('loaisanpham', credentials, {
             headers: {
               Authorization: `Token ${accessToken}`,
@@ -203,6 +202,9 @@ const ProductsType = () => {
             Thêm mới
           </Button>
         </Stack>
+        <SearchTable>
+          <TextField name="tenNhaCungCap" label="Tên nhà cung cấp" />
+        </SearchTable>
         <Stack direction="row" flexWrap="wrap-reverse" alignItems="center" justifyContent="flex-end" sx={{ mb: 5 }}>
           <div style={{ height: 400, width: '100%' }}>
             <DataGrid
@@ -221,6 +223,7 @@ const ProductsType = () => {
             />
           </div>
         </Stack>
+
         <FormDialog
           open={open}
           title={`${selectData ? 'Cập nhật' : 'Thêm mới'} loại sản phẩm`}
@@ -260,10 +263,9 @@ const ProductsType = () => {
           title="Bạn có chắc chắn muốn xoá không ?"
           ok="Xoá"
           close="Đóng"
-          handleClickOpen={()=>{}}
+          handleClickOpen={() => {}}
           handleClose={handleDeleteClose}
           handleSubmit={handleDelete}
-
         >
           <Box component="form" noValidate autoComplete="off" style={{ marginTop: '10px' }}>
             <></>

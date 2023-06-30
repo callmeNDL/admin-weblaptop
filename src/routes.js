@@ -40,9 +40,9 @@ export default function Router() {
   }, [])
 
   useEffect(() => {
-    if (!token) {
-      navigate("/login");
-    }
+    // if (!token) {
+    //   navigate("/login");
+    // }
   }, [token])
 
   const routes = useRoutes(

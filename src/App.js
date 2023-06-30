@@ -12,7 +12,7 @@ import ThemeProvider from './theme';
 import { StyledChart } from './components/chart';
 import ScrollToTop from './components/scroll-to-top';
 import store from './redux/store';
-
+import './scss/style.scss';
 // ----------------------------------------------------------------------
 
 export default function App() {

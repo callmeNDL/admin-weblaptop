@@ -24,6 +24,7 @@ import FormDialog from '../components/formDialog/FormDialog';
 import { Delete, get, getAuthToken, post, put } from '../services/request/request-service';
 import ActionButtons from '../components/action-button/ActionButtons';
 import FormDialogSubmit from '../components/formDialog/FormDialogSubmit';
+import SearchTable from '../components/search/SeachTable';
 
 // ----------------------------------------------------------------------
 export default function Brand() {
@@ -42,7 +43,6 @@ export default function Brand() {
     defaultValues: {
       tenNhaSanXuat: '',
       moTa: '',
-      
     },
   });
   const columns = [
@@ -53,21 +53,6 @@ export default function Brand() {
       minWidth: 200,
       align: 'center',
     },
-    // {
-    //   field: 'image',
-    //   headerName: 'Hinh ảnh',
-    //   width: 200,
-    //   align: 'center',
-    //   renderCell: (params) => (
-    //     <div style={{ width: 450, display: 'flex', alignItems: 'center', whiteSpace: 'normal', gap: 10 }}>
-    //       <img
-    //         src={params.row && params.row?.hinhAnhs[0]?.path}
-    //         alt="img-product-cart"
-    //         style={{ width: '100%', height: '100px', objectFit: 'cover' }}
-    //       />
-    //     </div>
-    //   ),
-    // },
     {
       field: 'moTa',
       headerName: 'Mô tả',
@@ -75,9 +60,20 @@ export default function Brand() {
       align: 'center',
     },
     {
-      field: 'acb',
+      field: 'active',
+      headerName: 'Trạng thái',
+      type: 'number',
+      minWidth: 160,
+      renderCell: (params) => (
+        <div className={`tag tag-${params.row.active ? 'active' : 'block'}`}>
+          {params.row.active ? 'Hoạt động' : 'Khóa'}
+        </div>
+      ),
+    },
+    {
+      field: 'actions',
       headerName: 'Actions',
-      minWidth: 100,
+      minWidth: 150,
       align: 'center',
       renderCell: (params) => (
         <ActionButtons
@@ -96,44 +92,6 @@ export default function Brand() {
     },
   ];
 
-  // const rows = [
-  //   {
-  //     id: 1,
-  //     hinhAnhs: [
-  //       {
-  //         path: 'https://lh3.googleusercontent.com/_85FkTsaqoVl-I6d5pN9jrE7jHrz1hzXQktSqWNrLmeIMaWB-wxsE6D_IyDC414BXjRM54JXbZzGQy8rFsz0-zWkVG4V6CuXHw=w400-rw',
-  //       },
-  //     ],
-  //     brand: 'HP',
-  //     price: '24000000',
-  //     active: true,
-  //     count: 15,
-  //   },
-  //   {
-  //     id: 2,
-  //     hinhAnhs: [
-  //       {
-  //         path: 'https://lh3.googleusercontent.com/IqFtu_Hq7dQkOuTjKwVTjKV5Z1qK3FsuX3yX6Ab30i_yXZ2B1dFs8uQwQ9zgTt3UZts3RnuYx-ujvQW0i5Ox2UDhrqxeehI=w400-rw',
-  //       },
-  //     ],
-  //     brand: 'ASUS',
-  //     price: '20000000',
-  //     active: true,
-  //     count: 5,
-  //   },
-  //   {
-  //     id: 3,
-  //     hinhAnhs: [
-  //       {
-  //         path: 'https://cdn.redmondpie.com/wp-content/uploads/2015/03/Apple-event-banners-main.png',
-  //       },
-  //     ],
-  //     brand: 'APPLE',
-  //     price: '21000000',
-  //     active: true,
-  //     count: 10,
-  //   },
-  // ];
   useEffect(() => {
     getList();
   }, []);
@@ -162,7 +120,7 @@ export default function Brand() {
     setSelectData('');
     reset({
       tenNhaSanXuat: '',
-      moTa: '',      
+      moTa: '',
     });
   };
   const onSubmit = async (data) => {
@@ -216,7 +174,7 @@ export default function Brand() {
       }
     }
   };
-  
+
   const handeEdit = () => {
     setOpen(true);
   };
@@ -268,6 +226,9 @@ export default function Brand() {
             Thêm mới
           </Button>
         </Stack>
+        <SearchTable>
+          <TextField name="tenNhaSanXuat" label="Tên nhà sản xuất" />
+        </SearchTable>
         <Stack direction="row" flexWrap="wrap-reverse" alignItems="center" justifyContent="flex-end" sx={{ mb: 5 }}>
           <div style={{ height: 400, width: '100%' }}>
             <DataGrid
@@ -279,9 +240,9 @@ export default function Brand() {
                 pagination: {
                   paginationModel: { page: 0, pageSize: 5 },
                 },
+                pinnedColumns: { right: ['actions'] },
               }}
               pageSizeOptions={[5, 10]}
-              checkboxSelection
               rowHeight={150}
             />
           </div>
@@ -305,13 +266,10 @@ export default function Brand() {
                   {...register('moTa', { required: 'Nhập mô tả ' })}
                   label="Mô tả"
                   fullWidth
-                  
                   error={!!errors.moTa}
                   helperText={errors.moTa?.message}
                 />
               </Grid>
-             
-              
             </Grid>
             <div style={{ display: 'flex', justifyContent: 'end', marginTop: '20px' }}>
               <Button onClick={handleClose}>Đóng</Button>

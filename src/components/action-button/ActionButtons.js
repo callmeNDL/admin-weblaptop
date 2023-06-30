@@ -11,7 +11,7 @@ const ActionButtons = ({ handleClickOpen, handleClickDelOpen }) => {
         </IconButton>
       </Tooltip>
       <Tooltip title="Delete" arrow>
-        <IconButton onClick={handleClickDelOpen} size="small">
+        <IconButton onClick={handleClickDelOpen} size="small" color="error">
           <DeleteIcon />
         </IconButton>
       </Tooltip>

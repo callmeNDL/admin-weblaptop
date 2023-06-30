@@ -1,0 +1,44 @@
+// color variants
+// @import 'themes-vars.module.scss';
+
+// @import 'custom.scss';
+// @import 'utilities-vars.scss';
+
+// third-party
+// @import '~react-perfect-scrollbar/dist/css/styles.css';
+
+// ==============================|| LIGHT BOX ||============================== //
+.fullscreen .react-images__blanket {
+  z-index: 1200;
+}
+
+// ==============================|| APEXCHART ||============================== //
+
+.apexcharts-legend-series .apexcharts-legend-marker {
+  margin-right: 8px;
+}
+
+// ==============================|| PERFECT SCROLLBAR ||============================== //
+
+// ==============================|| ANIMATION KEYFRAMES ||============================== //
+
+.vh100 {
+  height: 100vh !important;
+}
+.vw100 {
+  width: 100vw !important;
+}
+.cursor-pointer {
+  cursor: pointer !important;
+}
+
+.tag {
+  font-weight: 500;
+  &-active {
+    color: green;
+  }
+
+  &-block {
+    color: red;
+  }
+}
