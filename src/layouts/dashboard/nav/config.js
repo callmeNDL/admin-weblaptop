@@ -11,7 +11,7 @@ const navConfig = [
     icon: icon('ic_analytics'),
   },
   {
-    title: 'user',
+    title: 'Người dùng',
     type: 'text',
     subNav: [],
     path: '/dashboard/userV2',

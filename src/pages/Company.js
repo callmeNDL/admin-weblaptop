@@ -229,7 +229,7 @@ export default function Company() {
             />
           </div>
         </Stack>
-        <FormDialogSubmit open={open} title="Thêm mới nhà cung cấp">
+        <FormDialogSubmit open={open} title="Cập nhật nhà cung cấp">
           <form onSubmit={handleSubmit(onSubmit)}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
@@ -277,8 +277,8 @@ export default function Company() {
               </Grid>
             </Grid>
             <div style={{ display: 'flex', justifyContent: 'end', marginTop: '20px' }}>
-              <Button onClick={handleClose}>Dong</Button>
-              <Button type="submit">OK</Button>
+              <Button onClick={handleClose}>Đóng</Button>
+              <Button type="submit">Hoàn tất</Button>
             </div>
           </form>
         </FormDialogSubmit>
@@ -297,5 +297,6 @@ export default function Company() {
         </FormDialog>
       </Container>
     </>
-  );
+  );// thiếu form thêm, xóa cần được hiện ra
 }
+

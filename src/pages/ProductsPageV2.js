@@ -42,9 +42,9 @@ export default function ProductPageV2() {
             alt="img-product-cart"
             style={{ width: '80px', height: '80px', objectFit: 'cover' }}
           />
-          <div>
+          {/* <div>
             <div>{params.row.name}</div>
-          </div>
+          </div> */}
         </div>
       ),
     },
