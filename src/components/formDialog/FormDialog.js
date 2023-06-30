@@ -18,7 +18,7 @@ export default function FormDialog({ children, open, title, handleClickOpen, han
         <DialogContent>{children}</DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>{close}</Button>
-          <Button onClick={handleSubmit} autoFocus>
+          <Button onClick={handleSubmit} type='submit' autoFocus>
             {ok}
           </Button>
         </DialogActions>
