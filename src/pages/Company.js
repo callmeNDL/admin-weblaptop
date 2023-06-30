@@ -72,7 +72,7 @@ export default function Company() {
       ),
     },
     {
-      field: 'acb',
+      field: 'actions',
       headerName: 'Actions',
       minWidth: 100,
       align: 'center',
