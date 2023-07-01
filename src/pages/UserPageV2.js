@@ -38,8 +38,8 @@ export default function UsersPageV2() {
     username: '',
     password: '',
     email: '',
-    ten: "",
-    diaChi: ''
+    ten: '',
+    diaChi: '',
   });
   const [province, setProvince] = useState([]);
   const [selectData, setSelectData] = useState([]);
@@ -58,7 +58,7 @@ export default function UsersPageV2() {
       headerName: 'Tên',
       width: 150,
       align: 'center',
-      flex: 1
+      flex: 1,
     },
     {
       field: 'soDienThoai',
@@ -87,34 +87,35 @@ export default function UsersPageV2() {
       minWidth: 100,
       flex: 1,
       align: 'center',
-      renderCell: (params) => <div>{params.row.province.name}</div>,
+      renderCell: (params) => <p>{params.row.province.name}</p>,
     },
     {
-      field: 'acb',
+      field: 'actions',
       headerName: 'Actions',
       minWidth: 120,
       flex: 1,
       align: 'center',
-      renderCell: (params) =>
-        <ActionButtons params={params}
+      renderCell: (params) => (
+        <ActionButtons
+          params={params}
           handleClickOpen={() => {
-            setOpen(true)
-            setSelectData(params.row)
+            setOpen(true);
+            setSelectData(params.row);
           }}
           handleClickDelOpen={() => {
-            setSelectData(params.row)
-            handleDele()
-          }
-          }
+            setSelectData(params.row);
+            handleDele();
+          }}
         />
+      ),
     },
   ];
 
   useEffect(() => {
     if (selectData) {
-      setCredentials(selectData)
+      setCredentials(selectData);
     }
-  }, [selectData])
+  }, [selectData]);
 
   const handleDele = async () => {
     const { accessToken } = await getAuthToken();
@@ -124,11 +125,11 @@ export default function UsersPageV2() {
           const res = await Delete(`/customer/${selectData.id}/delete`, {
             headers: {
               Authorization: `Token ${accessToken}`,
-            }
-          })
+            },
+          });
           if (res) {
             enqueueSnackbar('Xoá thành công', { variant: 'error' });
-            getList()
+            getList();
           }
         } catch (error) {
           console.log(error);
@@ -143,23 +144,23 @@ export default function UsersPageV2() {
       province: '',
       district: '',
       ward: '',
-    })
+    });
   };
 
   useEffect(() => {
-    getList()
-    getProvince()
-    setSelectData({})
+    getList();
+    getProvince();
+    setSelectData({});
     setCredentials({
       province: '',
       district: '',
       ward: '',
-    })
-  }, [])
+    });
+  }, []);
 
   const getProvince = async () => {
     try {
-      const res = await get('province')
+      const res = await get('province');
       if (res) {
         setProvince(res);
       }
@@ -215,7 +216,7 @@ export default function UsersPageV2() {
     const date = view.$d.toLocaleDateString('en-CA');
     setCredentials({
       ...credentials,
-      'ngaySinh': date,
+      ngaySinh: date,
     });
   };
 
@@ -225,10 +226,10 @@ export default function UsersPageV2() {
       const res = await post('/customer/register', credentials);
       if (res) {
         enqueueSnackbar('Thêm thành công', { variant: 'success' });
-        handleClose()
+        handleClose();
       }
     } catch (error) {
-      enqueueSnackbar('Thêm thất bại', { variant: 'error' });
+      enqueueSnackbar('Thêm thất bại!', { variant: 'error' });
     }
   };
 
@@ -239,10 +240,10 @@ export default function UsersPageV2() {
         const res = await get('customer', {
           headers: {
             Authorization: `Token ${accessToken}`,
-          }
-        })
+          },
+        });
         if (res) {
-          setDataList(res)
+          setDataList(res);
         }
       } catch (error) {
         console.log(error);
@@ -291,7 +292,9 @@ export default function UsersPageV2() {
         ok="Thêm mới"
         close="Đóng"
         title="Thêm mới sản người dùng"
-        handleClickOpen={() => { setOpen(true) }}
+        handleClickOpen={() => {
+          setOpen(true);
+        }}
         handleClose={handleClose}
         handleSubmit={handleSubmit}
       >
@@ -338,18 +341,20 @@ export default function UsersPageV2() {
                 onChange={handleChange}
               />
             </Grid>
-            {!selectData && <Grid item xs={12}>
-              <TextField
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="new-password"
-                onChange={handleChange}
-              />
-            </Grid>}
+            {!selectData && (
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  name="password"
+                  label="Password"
+                  type="password"
+                  id="password"
+                  autoComplete="new-password"
+                  onChange={handleChange}
+                />
+              </Grid>
+            )}
             <Grid item xs={12}>
               <TextField
                 required
@@ -395,13 +400,14 @@ export default function UsersPageV2() {
                   name="province"
                   onChange={handleChange}
                 >
-                  {province && province.map(({ id, name, code }) => {
-                    return (
-                      <MenuItem value={id} key={id}>
-                        {name}
-                      </MenuItem>
-                    );
-                  })}
+                  {province &&
+                    province.map(({ id, name, code }) => {
+                      return (
+                        <MenuItem value={id} key={id}>
+                          {name}
+                        </MenuItem>
+                      );
+                    })}
                 </Select>
               </FormControl>
             </Grid>
