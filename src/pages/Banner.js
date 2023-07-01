@@ -24,6 +24,8 @@ import FormDialog from '../components/formDialog/FormDialog';
 import { Delete, get, getAuthToken, post, put } from '../services/request/request-service';
 import ActionButtons from '../components/action-button/ActionButtons';
 import FormDialogSubmit from '../components/formDialog/FormDialogSubmit';
+import SearchTable from '../components/search/SeachTable';
+
   
 // ----------------------------------------------------------------------
 
@@ -77,21 +79,33 @@ import FormDialogSubmit from '../components/formDialog/FormDialogSubmit';
       {
         field: 'active',
         headerName: 'Trạng thái',
-        sortable: false,
-        minWidth: 100,
-        align: 'center',
+        type: 'number',
+        minWidth: 160,
+        renderCell: (params) => (
+          <div className={`tag tag-${params.row.active ? 'active' : 'block'}`}>
+            {params.row.active ? 'Hoạt động' : 'Khóa'}
+          </div>
+        ),
       },
       {
-        field: 'acb',
+        field: 'actions',
         headerName: 'Actions',
         minWidth: 100,
         align: 'center',
-        renderCell: (params) =>
-          ActionButtons(
-            params.row,
-            () => {},
-            () => {}
-          ),
+        renderCell: (params) => (
+          <ActionButtons
+            handleClickOpen={() => {
+              // set gia tri muon update (daang chon)
+              setSelectData(params.row);
+              reset(params.row);
+              setOpen(true);
+            }}
+            handleClickDelOpen={() => {
+              setSelectData(params.row);
+              setOpenDelete(true);
+            }}
+          />
+        ),
       },
     ];
   
@@ -178,7 +192,8 @@ import FormDialogSubmit from '../components/formDialog/FormDialogSubmit';
       setFile(e.target.files[0]);
     };
     const onSubmit = async (data) => {
-      if (!selectData) {
+      console.log(selectData, 'selectData');
+      if (!selectData && !selectData?.id) {
         
         try {
           if (data) {
@@ -237,7 +252,7 @@ import FormDialogSubmit from '../components/formDialog/FormDialogSubmit';
         const { accessToken } = await getAuthToken();
         if (accessToken && selectData) {
           // call api delete
-          const res = await Delete(`nhacungcap/${selectData.id}`, {
+          const res = await Delete(`banneractive/${selectData.id}`, {
             headers: {
               Authorization: `Token ${accessToken}`,
             },
@@ -254,6 +269,7 @@ import FormDialogSubmit from '../components/formDialog/FormDialogSubmit';
         console.log(error);
       }
     };
+    
     console.log(selectData, 'ADAD');
     return (
       <>
@@ -272,10 +288,13 @@ import FormDialogSubmit from '../components/formDialog/FormDialogSubmit';
               Thêm Banner
             </Button>
           </Stack>
+          <SearchTable>
+              <TextField name="ten" label="Tên banner" />
+          </SearchTable>
           <Stack direction="row" flexWrap="wrap-reverse" alignItems="center" justifyContent="flex-end" sx={{ mb: 5 }}>
             <div style={{ height: 400, width: '100%' }}>
               <DataGrid
-                rows={dataList ?? []}
+                rows={dataList}
                 columns={columns}
                 autoHeight
                 disableRowSelectionOnClick
@@ -284,8 +303,7 @@ import FormDialogSubmit from '../components/formDialog/FormDialogSubmit';
                     paginationModel: { page: 0, pageSize: 5 },
                   },
                 }}
-                pageSizeOptions={[5, 10]}
-                checkboxSelection
+                pageSizeOptions={[5, 10]}                
                 rowHeight={100}
               />
             </div>
@@ -323,6 +341,17 @@ import FormDialogSubmit from '../components/formDialog/FormDialogSubmit';
                   // type="email"
                   error={!!errors.hinhAnh}
                   helperText={errors.hinhAnh?.message}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  name="createDate"
+                  {...register('createDate', { required: 'Ngày đăng' })}
+                  label="Ngày đăng"
+                  fullWidth
+                  // type="email"
+                  error={!!errors.createDate}
+                  helperText={errors.createDate?.message}
                 />
               </Grid>
               

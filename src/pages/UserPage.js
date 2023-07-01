@@ -26,6 +26,7 @@ import {
 import Label from '../components/label';
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
+import SearchTable from '../components/search/SeachTable';
 // sections
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 // mock

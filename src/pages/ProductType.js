@@ -217,8 +217,7 @@ const ProductsType = () => {
                   paginationModel: { page: 0, pageSize: 5 },
                 },
               }}
-              pageSizeOptions={[5, 10]}
-              checkboxSelection
+              pageSizeOptions={[5, 10]}              
               rowHeight={80}
             />
           </div>

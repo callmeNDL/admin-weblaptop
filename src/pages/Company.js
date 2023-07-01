@@ -240,8 +240,7 @@ export default function Company() {
                   paginationModel: { page: 0, pageSize: 5 },
                 },
               }}
-              pageSizeOptions={[5, 10]}
-              checkboxSelection
+              pageSizeOptions={[5, 10]}              
               rowHeight={100}
             />
           </div>

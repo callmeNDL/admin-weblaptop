@@ -16,7 +16,7 @@ import TextField from '@mui/material/TextField';
 import { enqueueSnackbar } from 'notistack';
 import { DataGrid } from '@mui/x-data-grid';
 import { DatePicker } from '@mui/x-date-pickers';
-
+import SearchTable from '../components/search/SeachTable';
 // components
 import Iconify from '../components/iconify';
 import FormDialog from '../components/formDialog/FormDialog';
@@ -267,6 +267,9 @@ export default function UsersPageV2() {
             Thêm mới
           </Button>
         </Stack>
+        <SearchTable>
+          <TextField name="ten" label="Tên người dùng" />
+        </SearchTable>
         <Stack direction="row" flexWrap="wrap-reverse" alignItems="center" justifyContent="flex-end" sx={{ mb: 5 }}>
           <div style={{ height: 400, width: '100%' }}>
             <DataGrid
@@ -279,8 +282,7 @@ export default function UsersPageV2() {
                   paginationModel: { page: 0, pageSize: 5 },
                 },
               }}
-              pageSizeOptions={[5, 10]}
-              checkboxSelection
+              pageSizeOptions={[5, 10]}              
               rowHeight={100}
             />
           </div>
