@@ -27,7 +27,8 @@ import FormDialog from '../components/formDialog/FormDialog';
 import { Delete, get, getAuthToken, post, put } from '../services/request/request-service';
 import ActionButtons from '../components/action-button/ActionButtons';
 import FormDialogSubmit from '../components/formDialog/FormDialogSubmit';
-  
+import SearchTable from '../components/search/SeachTable';
+
 // ----------------------------------------------------------------------
 
   export default function Promo() {
@@ -288,6 +289,9 @@ import FormDialogSubmit from '../components/formDialog/FormDialogSubmit';
               Thêm danh mục
             </Button>
           </Stack>
+          <SearchTable>
+              <TextField name="tenDanhMuc" label="Tên danh mục" />
+        </SearchTable>
           <Stack direction="row" flexWrap="wrap-reverse" alignItems="center" justifyContent="flex-end" sx={{ mb: 5 }}>
             <div style={{ height: 400, width: '100%' }}>
               <DataGrid

@@ -203,7 +203,7 @@ const ProductsType = () => {
           </Button>
         </Stack>
         <SearchTable>
-          <TextField name="tenNhaCungCap" label="Tên nhà cung cấp" />
+          <TextField name="tenDanhMuc" label="Tên danh mục" />
         </SearchTable>
         <Stack direction="row" flexWrap="wrap-reverse" alignItems="center" justifyContent="flex-end" sx={{ mb: 5 }}>
           <div style={{ height: 400, width: '100%' }}>
@@ -236,7 +236,7 @@ const ProductsType = () => {
             <Grid container spacing={3}>
               <Grid item xs={12}>
                 <TextField
-                  id="name"
+                  id="tenDanhMuc"
                   value={credentials.tenDanhMuc}
                   onChange={handleChange}
                   name="tenDanhMuc"
@@ -246,7 +246,7 @@ const ProductsType = () => {
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  id="name"
+                  id="moTa"
                   value={credentials.moTa}
                   onChange={handleChange}
                   name="moTa"
