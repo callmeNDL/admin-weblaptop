@@ -185,7 +185,7 @@ export default function Company() {
     try {
       const { accessToken } = await getAuthToken();
       if (accessToken && selectData) {
-        // call api delete
+        // api delete
         const res = await Delete(`nhacungcap/${selectData.id}`, {
           headers: {
             Authorization: `Token ${accessToken}`,

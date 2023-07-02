@@ -56,7 +56,7 @@ export default function ProductPageV2() {
         </div>
       ),
     },
-    { field: 'brand', headerName: 'Thương hiệu', width: 110 },
+    // { field: 'brand', headerName: 'Thương hiệu', width: 110 },
     {
       field: 'gia',
       headerName: 'Giá',
@@ -211,7 +211,7 @@ export default function ProductPageV2() {
       ],
     };
 
-    // truong hop nay la không có seledata nghĩa là mình chưa chọn thằng nào nên n hiểu là taọ mơis
+  //  truong hop nay la không có seledata nghĩa là mình chưa chọn thằng nào nên n hiểu là taọ mơis
     try {
       console.log(fromData, 'check from daat');
       if (fromData) {

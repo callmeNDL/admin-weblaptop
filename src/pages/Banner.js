@@ -153,7 +153,7 @@ import SearchTable from '../components/search/SeachTable';
       const { accessToken } = await getAuthToken();
       if (accessToken) {
         try {
-          const res = await get('banneractive', {
+          const res = await get('banner', {
             headers: {
               Authorization: `Token ${accessToken}`,
             }
@@ -199,7 +199,7 @@ import SearchTable from '../components/search/SeachTable';
           if (data) {
             const { accessToken } = await getAuthToken();
             if (accessToken) {
-              const res = await post('banneractive', data, {
+              const res = await post('banner', data, {
                 headers: {
                   Authorization: `Token ${accessToken}`,
                 },
@@ -223,7 +223,7 @@ import SearchTable from '../components/search/SeachTable';
           if (data) {
             const { accessToken } = await getAuthToken();
             if (accessToken) {
-              const res = await put(`banneractive/${selectData.id}`, data, {
+              const res = await put(`banner/${selectData.id}`, data, {
                 headers: {
                   Authorization: `Token ${accessToken}`,
                 },
@@ -252,7 +252,7 @@ import SearchTable from '../components/search/SeachTable';
         const { accessToken } = await getAuthToken();
         if (accessToken && selectData) {
           // call api delete
-          const res = await Delete(`banneractive/${selectData.id}`, {
+          const res = await Delete(`banner/${selectData.id}`, {
             headers: {
               Authorization: `Token ${accessToken}`,
             },
@@ -321,7 +321,7 @@ import SearchTable from '../components/search/SeachTable';
                   helperText={errors.ten?.message}
                 />
               </Grid>
-              <Grid item xs={12}>
+              {/* <Grid item xs={12}>
                 <TextField
                   name="active"
                   {...register('active', { required: 'Nhập trạng thái' })}
@@ -331,7 +331,7 @@ import SearchTable from '../components/search/SeachTable';
                   error={!!errors.active}
                   helperText={errors.active?.message}
                 />
-              </Grid>
+              </Grid> */}
               <Grid item xs={12}>
                 <TextField
                   name="hinhAnh"
@@ -349,7 +349,7 @@ import SearchTable from '../components/search/SeachTable';
                   {...register('createDate', { required: 'Ngày đăng' })}
                   label="Ngày đăng"
                   fullWidth
-                  // type="email"
+                  type="date"
                   error={!!errors.createDate}
                   helperText={errors.createDate?.message}
                 />
