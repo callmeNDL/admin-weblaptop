@@ -68,6 +68,7 @@ const ProductsType = () => {
     setCredentials({
       tenDanhMuc: '',
       moTa: '',
+      ProductsCount:'',
     });
   }, []);
 
@@ -108,6 +109,7 @@ const ProductsType = () => {
     setCredentials({
       tenDanhMuc: '',
       moTa: '',
+      ProductsCount:'',
     });
   };
   const handleOnChange = (e) => {
@@ -141,50 +143,111 @@ const ProductsType = () => {
   const handleDeleteClose = () => {
     setOpenDelete(false);
   };
+  const onSubmit = async (data) => {
+    console.log(selectData, 'selectData');
+    if (!selectData && !selectData?.id) {
+      // truong hop nay la không có seledata nghĩa là mình chưa chọn thằng nào nên n hiểu là taọ mơis
+      try {
+        if (data) {
+          const { accessToken } = await getAuthToken();
+          if (accessToken) {
+            const res = await post('loaisanpham', data, {
+              headers: {
+                Authorization: `Token ${accessToken}`,
+              },
+            });
+            if (res?.status === 'OK') {
+              getList();
+              enqueueSnackbar('Thêm thành công', { variant: 'success' });
+              handleClose();
+            } else {
+              enqueueSnackbar('Thêm thất bại', { variant: 'error' });
+            }
+          }
+        }
+      } catch (error) {
+        enqueueSnackbar('Thêm thất bại', { variant: 'error' });
+        console.log(error);
+      }
+    } else {
+      console.log('AaaAA');
 
-  const handleSubmit = async () => {
-    const { accessToken } = await getAuthToken();
-    if (accessToken && credentials.moTa !== '' && credentials.tenDanhMuc !== '') {
-      if (!selectData) {
-        // selectData truong hop khong co chon data thi n la api them
-        if (credentials) {
-          const res = await post('loaisanpham', credentials, {
-            headers: {
-              Authorization: `Token ${accessToken}`,
+      // ngược lại nếu đẫ chọn 1 thằng rồi thì la cap nhật
+      try {
+        if (data) {
+          const { accessToken } = await getAuthToken();
+          if (accessToken) {
+            const res = await put(`loaisanpham/${selectData.id}`, 
+            {
+              tenDanhMuc: credentials.tenDanhMuc,
+              moTa: credentials.moTa,
+              ProductsCount: credentials.ProductsCount,
             },
-          });
-          if (res.status === 'OK') {
-            getList();
-            setOpen(false);
-            enqueueSnackbar('Thêm thành công', { variant: 'success' });
-            handleClose();
-          } else {
-            enqueueSnackbar('Thêm thất bại', { variant: 'error' });
+            {
+              headers: {
+                Authorization: `Token ${accessToken}`,
+              },
+            }
+            );
+            if (res?.status === 'OK') {
+              getList();
+              enqueueSnackbar(res?.message, { variant: 'success' });
+              handleClose();
+            } else {
+              enqueueSnackbar('Cập nhật thất bại', { variant: 'error' });
+            }
           }
         }
-      } else {
-        const res = await put(
-          `loaisanpham/${selectData.id}`,
-          {
-            tenDanhMuc: credentials.tenDanhMuc,
-            moTa: credentials.moTa,
-          },
-          {
-            headers: {
-              Authorization: `Token ${accessToken}`,
-            },
-          }
-        );
-        if (res.status === 'OK') {
-          getList();
-          enqueueSnackbar('Cập nhật thành công', { variant: 'success' });
-          handleClose();
-        } else {
-          enqueueSnackbar('Cập nhật thất bại', { variant: 'error' });
-        }
+      } catch (error) {
+        enqueueSnackbar('Cập nhật thất bại', { variant: 'error' });
+        console.log(error);
       }
     }
   };
+  // const handleSubmit = async () => {
+  //   const { accessToken } = await getAuthToken();
+  //   if (accessToken && credentials.moTa !== '' && credentials.tenDanhMuc !== '' && credentials.ProductsCount !== '') {
+  //     if (!selectData) {
+  //       // selectData truong hop khong co chon data thi n la api them
+  //       if (credentials) {
+  //         const res = await post('loaisanpham', credentials, {
+  //           headers: {
+  //             Authorization: `Token ${accessToken}`,
+  //           },
+  //         });
+  //         if (res.status === 'OK') {
+  //           getList();
+  //           setOpen(false);
+  //           enqueueSnackbar('Thêm thành công', { variant: 'success' });
+  //           handleClose();
+  //         } else {
+  //           enqueueSnackbar('Thêm thất bại', { variant: 'error' });
+  //         }
+  //       }
+  //     } else {
+  //       const res = await put(
+  //         `loaisanpham/${selectData.id}`,
+  //         {
+  //           tenDanhMuc: credentials.tenDanhMuc,
+  //           moTa: credentials.moTa,
+  //           ProductsCount: credentials.ProductsCount,
+  //         },
+  //         {
+  //           headers: {
+  //             Authorization: `Token ${accessToken}`,
+  //           },
+  //         }
+  //       );
+  //       if (res.status === 'OK') {
+  //         getList();
+  //         enqueueSnackbar('Cập nhật thành công', { variant: 'success' });
+  //         handleClose();
+  //       } else {
+  //         enqueueSnackbar('Cập nhật thất bại', { variant: 'error' });
+  //       }
+  //     }
+  //   }
+  // };
   return (
     <>
       <Container>
@@ -230,7 +293,7 @@ const ProductsType = () => {
           close="Đóng"
           handleClickOpen={handleClickOpen}
           handleClose={handleClose}
-          handleSubmit={handleSubmit}
+          handleSubmit={onSubmit}
         >
           <Box component="form" noValidate autoComplete="off" style={{ marginTop: '10px' }}>
             <Grid container spacing={3}>
@@ -251,6 +314,16 @@ const ProductsType = () => {
                   onChange={handleChange}
                   name="moTa"
                   label="Mô tả"
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  id="ProductsCount"
+                  value={credentials.ProductsCount}
+                  onChange={handleChange}
+                  name="ProductsCount"
+                  label="Số lượng"
                   fullWidth
                 />
               </Grid>

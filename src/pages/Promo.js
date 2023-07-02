@@ -83,16 +83,21 @@ import SearchTable from '../components/search/SeachTable';
       // },
       
       { field: 'percentDiscount', headerName: 'Giảm giá', width: 110,align: 'center' },
-      { field: 'createDate', headerName: 'Ngày đăng', width: 110,align: 'center' },
-      { field: 'description', headerName: 'Mô tả', width: 110,align: 'center' },
-      { field: 'closeDate', headerName: 'Ngày kết thúc', width: 110,align: 'center' },
+      { field: 'createDate', headerName: 'Ngày đăng', width: 140,align: 'center' },
+      { field: 'description', headerName: 'Mô tả', width: 220,align: 'center' },
+      { field: 'closeDate', headerName: 'Ngày kết thúc', width: 140,align: 'center' },
       
       {
         field: 'active',
         headerName: 'Trạng thái',
-        sortable: false,
+        type: 'number',
         minWidth: 100,
         align: 'center',
+        renderCell: (params) => (
+          <div className={`tag tag-${params.row.active ? 'active' : 'block'}`}>
+            {params.row.active ? 'Hoạt động' : 'Khóa'}
+          </div>
+        ),
       },
       {
         field: 'acb',
@@ -355,45 +360,9 @@ import SearchTable from '../components/search/SeachTable';
                   helperText={errors.createDate?.message}
                 />
               </Grid> */}
-              <Grid item xs={12}>
-                  <LocalizationProvider dateAdapter={AdapterDateFns}>
-                    <DatePicker
-                      label="Ngày đăng"
-                      value={selectedDate}
-                      onChange={handleDateChange}
-                      renderInput={(params) => (
-                        <TextField
-                          name="createDate"
-                          {...register('createDate', { required: 'Ngày đăng' })}
-                          {...params}
-                          fullWidth
-                          error={!!errors.createDate}
-                          helperText={errors.createDate?.message}
-                        />
-                      )}
-                    />
-                  </LocalizationProvider>
-              </Grid>
-              <Grid item xs={12}>
-                  <LocalizationProvider dateAdapter={AdapterDateFns}>
-                    <DatePicker
-                      label="Ngày kết thúc"
-                      value={selectedDate}
-                      onChange={handleDateChange}
-                      renderInput={(params) => (
-                        <TextField
-                          name="closeDate"
-                          {...register('closeDate', { required: 'Ngày kết thúc' })}
-                          {...params}
-                          fullWidth
-                          error={!!errors.closeDate}
-                          helperText={errors.closeDate?.message}
-                        />
-                      )}
-                    />
-                  </LocalizationProvider>
-              </Grid>
-              <Grid item xs={12}>
+              
+              
+              {/* <Grid item xs={12}>
                 <TextField
                   name="active"
                   {...register('active', { required: 'Nhập trạng thái' })}
@@ -403,8 +372,29 @@ import SearchTable from '../components/search/SeachTable';
                   error={!!errors.active}
                   helperText={errors.active?.message}
                 />
+              </Grid> */}
+              <Grid item xs={12}>
+                <TextField
+                  name="createDate"
+                  {...register('createDate', { required: 'Nhập ngày bắt đăng' })}
+                  label="Nhập ngày đăng"
+                  fullWidth
+                  type="date"
+                  error={!!errors.createDate}
+                  helperText={errors.createDate?.message}
+                />
               </Grid>
-              
+              <Grid item xs={12}>
+                <TextField
+                  name="closeDate"
+                  {...register('closeDate', { required: 'Nhập ngày kết thúc' })}
+                  label="Nhập kết thúc"
+                  fullWidth
+                  type="date"
+                  error={!!errors.closeDate}
+                  helperText={errors.closeDate?.message}
+                />
+              </Grid>
             </Grid>
             <div style={{ display: 'flex', justifyContent: 'end', marginTop: '20px' }}>
               <Button onClick={handleClose}>Đóng</Button>

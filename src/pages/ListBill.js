@@ -210,6 +210,9 @@ export default function ListBill() {
           Thêm hóa đơn
         </Button>
       </Stack>
+      <SearchTable>
+            <TextField name="tenKhachHang" label="Tên khách hàng" />
+      </SearchTable>
       <Stack direction="row" flexWrap="wrap-reverse" alignItems="center" justifyContent="flex-end" sx={{ mb: 5 }}>
         <div style={{ height: 400, width: '100%' }}>
           <DataGrid
@@ -227,13 +230,12 @@ export default function ListBill() {
           />
         </div>
       </Stack>
-      <SearchTable>
-        <TextField name="tenNhaCungCap" label="Tên nhà cung cấp" />
-      </SearchTable>
+      
       <FormDialogSubmit
         open={open}
         title="Thêm mới hóa đơn"
       >
+        
         <Box component="form" noValidate autoComplete="off">
           <Grid container spacing={2}>
             <Grid item xs={12}>

@@ -366,8 +366,8 @@ import SearchTable from '../components/search/SeachTable';
         <FormDialog
           open={openDelete}
           title="Bạn có chắc chắn muốn khóa không ?"
-          ok="Xoá"
-          close="Khóa"
+          ok="Khóa"
+          close="Đóng"
           handleClickOpen={() => {}}
           handleClose={handleDeleteClose}
           handleSubmit={handleDelete}
