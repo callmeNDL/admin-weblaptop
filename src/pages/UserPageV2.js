@@ -8,38 +8,53 @@ import {
   Box,
   Grid,
   FormControl,
-  InputLabel,
-  Select,
   MenuItem,
 } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import { enqueueSnackbar } from 'notistack';
 import { DataGrid } from '@mui/x-data-grid';
 import { DatePicker } from '@mui/x-date-pickers';
-import SearchTable from '../components/search/SeachTable';
+import { useForm } from 'react-hook-form';
+import dayjs from 'dayjs';
+
 // components
+import SearchTable from '../components/search/SeachTable';
 import Iconify from '../components/iconify';
-import FormDialog from '../components/formDialog/FormDialog';
 import ActionButtons from '../components/action-button/ActionButtons';
 import { Delete, get, getAuthToken, post } from '../services/request/request-service';
+import FormDialogSubmit from '../components/formDialog/FormDialogSubmit';
+import FormDialog from '../components/formDialog/FormDialog';
 // ----------------------------------------------------------------------
+
+const defaultValues = {
+  hoTenLot: '',
+  Ten: '',
+  email: '',
+  username: '',
+  soDienThoai: '',
+  province: '',
+  district: '',
+  ward: '',
+  diaChi: '',
+  password: '',
+
+};
 export default function UsersPageV2() {
   const [open, setOpen] = useState(false);
   const [dataList, setDataList] = useState([]);
   const [district, setDistrict] = useState([]);
+  const [startDate, setStartDate] = useState();
+  const [openDelete, setOpenDelete] = useState(false);
   const [ward, setWard] = useState([]);
-  const [credentials, setCredentials] = useState({
-    province: '',
-    district: '',
-    ward: '',
-    hoTenLot: '',
-    soDienThoai: '',
-    ngaySinh: '',
-    username: '',
-    password: '',
-    email: '',
-    ten: "",
-    diaChi: ''
+  const {
+    register,
+    reset,
+    watch,
+    setValue,
+    formState: { errors },
+    handleSubmit,
+  } = useForm({
+    defaultValues
   });
   const [province, setProvince] = useState([]);
   const [selectData, setSelectData] = useState([]);
@@ -90,7 +105,18 @@ export default function UsersPageV2() {
       renderCell: (params) => <div>{params.row.province.name}</div>,
     },
     {
-      field: 'acb',
+      field: 'active',
+      headerName: 'Trạng thái',
+      type: 'number',
+      minWidth: 160,
+      renderCell: (params) => (
+        <div className={`tag tag-${params.row.active ? 'active' : 'block'}`}>
+          {params.row.active ? 'Hoạt động' : 'Khóa'}
+        </div>
+      ),
+    },
+    {
+      field: 'actions',
       headerName: 'Actions',
       minWidth: 120,
       flex: 1,
@@ -103,18 +129,43 @@ export default function UsersPageV2() {
           }}
           handleClickDelOpen={() => {
             setSelectData(params.row)
-            handleDele()
+            setOpenDelete(true)
           }
           }
         />
     },
   ];
 
-  useEffect(() => {
-    if (selectData) {
-      setCredentials(selectData)
-    }
-  }, [selectData])
+  const watchProvince = watch('province', '');
+  const watchDistrict = watch('district', '');
+
+  // const getDetail = async (id) => {
+  //   const { accessToken } = await getAuthToken();
+  //   if (selectData && accessToken) {
+  //     if (selectData.id) {
+  //       try {
+  //         const res = await get(`/customer/${selectData.id}`, {
+  //           headers: {
+  //             Authorization: `Token ${accessToken}`,
+  //           }
+  //         })
+  //         if (res) {
+
+  //           reset((value) => ({
+  //             ...value,
+  //             ...selectData,
+  //             Ten: res.ten
+  //           }));
+  //           setValue('province', res.province.id);
+  //           setValue('ngaySinh', res.ngaySinh);
+  //           console.log(res.ngaySinh, 'ngaySinh');
+  //         }
+  //       } catch (error) {
+  //         console.log(error);
+  //       }
+  //     }
+  //   }
+  // };
 
   const handleDele = async () => {
     const { accessToken } = await getAuthToken();
@@ -139,23 +190,9 @@ export default function UsersPageV2() {
 
   const handleClose = () => {
     setOpen(false);
-    setCredentials({
-      province: '',
-      district: '',
-      ward: '',
-    })
-  };
-
-  useEffect(() => {
-    getList()
-    getProvince()
+    reset(defaultValues)
     setSelectData({})
-    setCredentials({
-      province: '',
-      district: '',
-      ward: '',
-    })
-  }, [])
+  };
 
   const getProvince = async () => {
     try {
@@ -171,25 +208,24 @@ export default function UsersPageV2() {
   useEffect(() => {
     const loadDistrict = async () => {
       try {
-        const req = await get(`/district/${credentials.province}`);
+        const req = await get(`/district/${watchProvince}`);
         if (req) {
-          console.log(req);
           setDistrict(req);
         }
       } catch (error) {
         console.log(error);
       }
     };
-    if (credentials && credentials.province) {
+    if (watchProvince) {
       loadDistrict();
     }
     return () => { };
-  }, [credentials.province]);
+  }, [watchProvince]);
 
   useEffect(() => {
     const loadWard = async () => {
       try {
-        const req = await get(`/ward/${credentials.district}`);
+        const req = await get(`/ward/${watchDistrict}`);
         if (req) {
           setWard(req);
         }
@@ -197,35 +233,34 @@ export default function UsersPageV2() {
         console.log(error);
       }
     };
-    if (credentials && credentials.district) {
+    if (watchDistrict) {
       loadWard();
     }
     return () => { };
-  }, [credentials.district]);
+  }, [watchDistrict]);
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setCredentials({
-      ...credentials,
-      [name]: value,
-    });
-  };
-
-  const changeDate = (view) => {
-    const date = view.$d.toLocaleDateString('en-CA');
-    setCredentials({
-      ...credentials,
-      'ngaySinh': date,
-    });
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const onSubmit = async (data) => {
     try {
-      const res = await post('/customer/register', credentials);
+      console.log(data, "data");
+      const date = startDate?.$d.toLocaleDateString('en-CA');
+      const fromData = {
+        hoTenLot: data.hoTenLot,
+        Ten: data.Ten ?? '',
+        email: data.email ?? 0,
+        username: data.username ?? '',
+        soDienThoai: data.soDienThoai ?? '',
+        province: data.province ?? '',
+        district: data.district ?? '',
+        ward: data.ward ?? '',
+        diaChi: data.diaChi ?? '',
+        ngaySinh: date ?? '',
+        password: data.password ?? '',
+      };
+      const res = await post('/customer/register', fromData);
       if (res) {
         enqueueSnackbar('Thêm thành công', { variant: 'success' });
         handleClose()
+        reset(defaultValues)
       }
     } catch (error) {
       enqueueSnackbar('Thêm thất bại', { variant: 'error' });
@@ -249,6 +284,52 @@ export default function UsersPageV2() {
       }
     }
   };
+
+  useEffect(() => {
+    getList()
+    getProvince()
+    setSelectData({})
+  }, [])
+
+  const handleDeleteClose = () => {
+    setOpenDelete(false);
+    setSelectData({});
+  };
+
+  const handleDelete = async () => {
+    try {
+      const { accessToken } = await getAuthToken();
+      if (accessToken && selectData) {
+        // call api delete
+        const res = await Delete(`sanpham/${selectData.id}`, {
+          headers: {
+            Authorization: `Token ${accessToken}`,
+          },
+        });
+        if (res?.status === 'OK') {
+          getList();
+          enqueueSnackbar(res?.message, { variant: 'success' });
+          handleDeleteClose();
+        } else {
+          enqueueSnackbar('Khóa thất bại', { variant: 'error' });
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+
+  useEffect(() => {
+    if (selectData) {
+      reset((value) => ({
+        ...value,
+        ...selectData,
+        Ten: selectData.ten
+      }));
+      setStartDate(dayjs(selectData?.ngaySinh))
+    }
+  }, [selectData])
 
   return (
     <>
@@ -282,190 +363,192 @@ export default function UsersPageV2() {
                   paginationModel: { page: 0, pageSize: 5 },
                 },
               }}
-              pageSizeOptions={[5, 10]}              
+              pageSizeOptions={[5, 10]}
               rowHeight={100}
             />
           </div>
         </Stack>
       </Container>
-      <FormDialog
-        open={open}
-        ok="Thêm mới"
-        close="Đóng"
-        title="Thêm mới sản người dùng"
-        handleClickOpen={() => { setOpen(true) }}
-        handleClose={handleClose}
-        handleSubmit={handleSubmit}
-      >
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+      <FormDialogSubmit open={open} title={`${selectData?.id ? 'Cập nhật' : 'Thêm mới'} nhà người dùng`}>
+        <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={6} sm={6}>
               <TextField
-                autoComplete="given-name"
-                name="hoTenLot"
-                required
-                fullWidth
-                value={credentials.hoTenLot}
-                id="hoTenLot"
                 type="text"
                 label="Họ và tên lót"
-                onChange={handleChange}
-                autoFocus
+                name="hoTenLot"
+                {...register('hoTenLot', { required: 'Nhập Họ và tên lót' })}
+                fullWidth
+                error={!!errors.hoTenLot}
+                helperText={errors.hoTenLot?.message}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={6} sm={6}>
               <TextField
-                required
+                name="Ten"
+                {...register('Ten', { required: 'Nhập tên' })}
                 fullWidth
-                id="ten"
+                error={!!errors.Ten}
+                helperText={errors.Ten?.message}
                 label="Ten"
-                value={credentials.ten}
-                type="text"
-                name="ten"
-                autoComplete="family-name"
-                onChange={handleChange}
               />
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid item xs={6}>
               <TextField
-                required
-                fullWidth
-                id="email"
                 label="Email"
-                value={credentials.email}
                 name="email"
                 type="email"
-                autoComplete="email"
-                onChange={handleChange}
+                {...register('email', { required: 'Nhập tên' })}
+                fullWidth
+                error={!!errors.email}
+                helperText={errors.email?.message}
               />
             </Grid>
-            {!selectData && <Grid item xs={12}>
+            {!selectData?.id && <Grid item xs={6}>
               <TextField
-                required
                 fullWidth
-                name="password"
                 label="Password"
+                name="password"
                 type="password"
-                id="password"
-                autoComplete="new-password"
-                onChange={handleChange}
+                {...register('password', { required: 'Nhập password' })}
+                error={!!errors.password}
+                helperText={errors.password?.message}
               />
             </Grid>}
-            <Grid item xs={12}>
+            <Grid item xs={6}>
               <TextField
-                required
                 fullWidth
-                value={credentials.username}
                 name="username"
                 label="Username"
-                id="username"
                 type="text"
-                autoComplete="new-username"
-                onChange={handleChange}
+                {...register('username', { required: 'Nhập username' })}
+                error={!!errors.username}
+                helperText={errors.username?.message}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={6} sm={6}>
               <DatePicker
-                label="Ngày sinh"
-                onChange={(view) => {
-                  changeDate(view);
+                name='ngaySinh'
+                onChange={date => {
+                  console.log(date, "date")
+                  setStartDate(date)
                 }}
+                format="DD/MM/YYYY"
+                inputFormat="DD/MM/YYYY"
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={6} sm={6}>
               <TextField
-                required
                 fullWidth
-                value={credentials.soDienThoai}
                 name="soDienThoai"
                 label="SDT"
                 type="number"
-                id="soDienThoai"
                 autoComplete="new-password"
-                onChange={handleChange}
+                {...register('soDienThoai', { required: 'Nhập SDT' })}
+                error={!!errors.soDienThoai}
+                helperText={errors.soDienThoai?.message}
               />
             </Grid>
-            <Grid item xs={12}>
+            {!selectData?.id && <Grid item xs={6}>
               <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Thành phố / Tỉnh</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={credentials && credentials.province ? credentials.province.id : ''}
-                  label="province"
+                <TextField
+                  select
+                  fullWidth
                   name="province"
-                  onChange={handleChange}
+                  label="Thành phố / Tỉnh"
+                  inputProps={register('province', {
+                    required: 'Nhap Thành phố / Tỉnh!',
+                  })}
+                  error={errors.province}
+                  helperText={errors.province?.message}
                 >
-                  {province && province.map(({ id, name, code }) => {
+                  {province && province?.map(({ id, name, code }) => {
                     return (
                       <MenuItem value={id} key={id}>
                         {name}
                       </MenuItem>
                     );
                   })}
-                </Select>
+                </TextField>
               </FormControl>
-            </Grid>
-            <Grid item xs={12}>
+            </Grid>}
+            {!selectData?.id && <Grid item xs={6}>
+              <TextField
+                select
+                fullWidth
+                name="district"
+                label="Quận / Huyện"
+                inputProps={register('district', {
+                  required: 'Nhap Quận / Huyện!',
+                })}
+                error={errors.district}
+                helperText={errors.district?.message}
+              >
+                {district &&
+                  district?.map((item) => {
+                    return (
+                      <MenuItem key={item.id} value={item.id}>
+                        {item.name}
+                      </MenuItem>
+                    );
+                  })}
+              </TextField>
+            </Grid>}
+            {!selectData?.id && <Grid item xs={6}>
               <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Quận / Huyện</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={credentials && credentials.district ? credentials.district.id : ''}
-                  label="district"
-                  name="district"
-                  onChange={handleChange}
+                <TextField
+                  select
+                  fullWidth
+                  name="ward"
+                  label="Phường"
+                  inputProps={register('ward', {
+                    required: 'Nhap Phường!',
+                  })}
+                  error={errors.ward}
+                  helperText={errors.ward?.message}
                 >
-                  {district &&
-                    district.map((item) => {
+                  {ward &&
+                    ward?.map((item) => {
                       return (
                         <MenuItem key={item.id} value={item.id}>
                           {item.name}
                         </MenuItem>
                       );
                     })}
-                </Select>
+                </TextField>
               </FormControl>
-            </Grid>
-            <Grid item xs={12}>
-              <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Phường</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={credentials && credentials.ward ? credentials.ward.id : ''}
-                  label="ward"
-                  name="ward"
-                  onChange={handleChange}
-                >
-                  {ward.map(({ id, name, code }) => {
-                    return (
-                      <MenuItem value={id} key={id}>
-                        {name}
-                      </MenuItem>
-                    );
-                  })}
-                </Select>
-              </FormControl>
-            </Grid>
+            </Grid>}
             <Grid item xs={12}>
               <TextField
-                autoComplete="given-name"
                 name="diaChi"
-                required
-                fullWidth
-                id="diaChi"
-                type="text"
+                {...register('diaChi', { required: 'Nhập Địa chỉ' })}
                 label="Địa chỉ"
-                value={credentials.diaChi}
-                onChange={handleChange}
+                fullWidth
+                error={!!errors.diaChi}
+                helperText={errors.diaChi?.message}
               />
             </Grid>
           </Grid>
+          <div style={{ display: 'flex', justifyContent: 'end', marginTop: '20px' }}>
+            <Button onClick={handleClose}>Đóng</Button>
+            <Button type="submit">Hoàn tất</Button>
+          </div>
+        </Box>
+      </FormDialogSubmit>
+      <FormDialog
+        open={openDelete}
+        title="Bạn có chắc chắn muốn khóa không ?"
+        ok="Khóa"
+        close="Đóng"
+        handleClickOpen={() => { }}
+        handleClose={handleDeleteClose}
+        handleSubmit={handleDelete}
+      >
+        <Box component="form" noValidate autoComplete="off" style={{ marginTop: '10px' }}>
+          <></>
         </Box>
       </FormDialog>
     </>
-  );
+  )
 }

@@ -14,238 +14,274 @@ import {
   MenuItem,
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
+import { useForm } from 'react-hook-form';
+import { enqueueSnackbar } from 'notistack';
+
 import Iconify from '../components/iconify';
 import FormDialog from '../components/formDialog/FormDialog';
-import { get, getAuthToken } from '../services/request/request-service';
+import { Delete, get, getAuthToken } from '../services/request/request-service';
 import ActionButtons from '../components/action-button/ActionButtons';
+import SearchTable from '../components/search/SeachTable';
+import FormDialogSubmit from '../components/formDialog/FormDialogSubmit';
 // ----------------------------------------------------------------------
-
+const defaultValues = {
+  tenKhachHang: '',
+  diaChi: "",
+  soDienThoai: "",
+  ghiChu: "",
+  trangThaiThanhToan: "",
+  soThangTraGop: '',
+  soTienTraTruoc: null,
+  soTienTraGop: null,
+  chiTietHoaDons: [{
+    soLuong: '',
+    gia: null,
+    sanPham: {
+      id: ''
+    }
+  }]
+};
 
 export default function ListBill() {
-    const [open, setOpen] = useState(false);
-    const [file, setFile] = useState(null);
-    const [dataList, setDataList] = useState([]);
-    const [selectedFile, setSelectedFile] = useState(null);
-      
-        const handleOnChangeUpload = (event) => {
-          const file = event.target.files[0];
-          setSelectedFile(file);
-        };
-    const columns = [
-      { field: 'id', headerName: 'ID', width: 90 },
-      { field: 'userName', headerName: 'Tên khách hàng', width: 180 },
-      // {
-      //   field: 'description',
-      //   headerName: 'Chi tiết hóa đơn',
-      //   minWidth: 370,
-      //   align: 'center',
-      //   flex: 1,
-      //   renderCell: (params) => (
-      //     <div style={{ width: 450, display: 'flex', alignItems: 'center', whiteSpace: 'normal', gap: 10 }}>
-      //       <img
-      //         src={params.row && params.row?.hinhAnhs[0]?.path}
-      //         alt="img-product-cart"
-      //         style={{ width: '80px', height: '80px', objectFit: 'cover' }}
-      //       />
-      //       <div>
-      //         <div>{params.row.name}</div>
-      //       </div>
-      //     </div>
-      //   ),
-      // },
-      { field: 'description', headerName: 'Chi tiết hóa đơn', width: 300 },
-      // { field: 'closeDate', headerName: 'Thời hạn', width: 110 },
-      { field: 'address', headerName: 'Địa chỉ', width: 110 },
-     
-      {
-        field: 'total',
-        headerName: 'Tổng tiền',
-        type: 'number',
-        minWidth: 160,
-        align: 'center',
-      },
-      {
-        field: 'active  ',
-        headerName: 'Trạng thái',
-        sortable: false,
-        minWidth: 100,
-        align: 'center',
-      },
-      {
-        field: 'acb',
-        headerName: 'Actions',
-        minWidth: 100,
-        align: 'center',
-        renderCell: (params) =>
-          ActionButtons(
-            params.row,
-            () => { },
-            () => { }
-          ),
-      },
-    ];
-  
-    const rows = [
-      {
-        id: 1,
-        userName: 'Lê Hoàng Anh',
-        description:'Chi tiết hóa đơn',
-        address: '180 cao Lỗ, Phường 4, quận 8, TPHCM',
-        active: true,
-        total: '17.000.000vnd',
-      },
-      {
-        id: 2,
-        userName: 'Nguyễn Hoàng Minh',
-        description:'Chi tiết hóa đơn',
-        address: '159 Nguyễn Thị Minh Khai, phường Phạm Ngũ Lão, quận 1, TPHCM',
-        active: true,
-        total: '32.000.000vnd',
-      },
-      {
-        id: 3,
-        userName: 'Ngô Hồng Hải',
-        description:'Chi tiết hóa đơn',
-        address: '55B Trần Quang Khải, phường Tân Định, quận 1 TPHCM',
-        active: true,
-        total: '18.000.000vnd',
-      },
-      {
-        id: 4,
-        userName: 'Nguyễn Phúc Thành',
-        description:'Chi tiết hóa đơn',
-        address: '220 Trần Quang Khải, phường Tân Định, quận 1 TPHCM',
-        active: true,
-        total: '15.000.000vnd',
-      },
-    ]
-  
-    useEffect(() => {
-      getList()
-    }, [])
-  
-    const getList = async () => {
-      const { accessToken } = await getAuthToken();
-      if (accessToken) {
-        try {
-          const res = await get('sanpham', {
-            headers: {
-              Authorization: `Token ${accessToken}`,
-            }
-          })
-          if (res) {
-            setDataList(res)
+  const [open, setOpen] = useState(false);
+  const [showDetailBill, setShowDetailBill] = useState(false);
+  const [file, setFile] = useState(null);
+  const [dataList, setDataList] = useState([]);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectData, setSelectData] = useState([]);
+  const [openDelete, setOpenDelete] = useState(false);
+  const {
+    register,
+    reset,
+    watch,
+    setValue,
+    formState: { errors },
+    handleSubmit,
+  } = useForm({
+    defaultValues
+  });
+
+  const handleOnChangeUpload = (event) => {
+    const file = event.target.files[0];
+    setSelectedFile(file);
+  };
+  const columns = [
+    { field: 'id', headerName: 'ID', width: 90 },
+    { field: 'tenKhachHang', headerName: 'Tên khách hàng', width: 180 },
+    {
+      field: 'description', headerName: 'Chi tiết hóa đơn', width: 300,
+      renderCell: (params) => (
+        // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+        <div
+          className='detailAction'
+          onClick={() => {
+            setSelectData(params.row)
+            setShowDetailBill(true)
+          }}
+        >
+          Xem danh sách sản phẩm
+        </div>
+      )
+
+    },
+    { field: 'diaChi', headerName: 'Địa chỉ', width: 110 },
+    { field: 'isTraGop', headerName: 'Trả góp', width: 110 },
+    {
+      field: 'tongTien',
+      headerName: 'Tổng tiền',
+      type: 'number',
+      minWidth: 160,
+      align: 'center',
+    },
+    {
+      field: 'trangThai',
+      headerName: 'Trạng thái',
+      sortable: false,
+      minWidth: 100,
+      align: 'center',
+    },
+    {
+      field: 'ghiChu',
+      headerName: 'Ghi chú',
+      sortable: false,
+      minWidth: 100,
+      align: 'center',
+    },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      minWidth: 120,
+      flex: 1,
+      align: 'center',
+      renderCell: (params) =>
+        <ActionButtons params={params}
+          handleClickOpen={() => {
+            setOpen(true)
+            setSelectData(params.row)
+          }}
+          handleClickDelOpen={() => {
+            setSelectData(params.row)
+            setOpenDelete(true)
           }
-        } catch (error) {
-          console.log(error);
+          }
+        />
+    },
+  ];
+
+  useEffect(() => {
+    getList()
+  }, [])
+
+  const handleClickOpen = () => {
+    setOpen(false);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const handleOnChange = (e) => {
+    console.log(e.target.files[0]);
+    setFile(e.target.files[0]);
+  };
+
+  const getList = async () => {
+    const { accessToken } = await getAuthToken();
+    if (accessToken) {
+      try {
+        const res = await get('hoadon', {
+          headers: {
+            Authorization: `Token ${accessToken}`,
+          },
+        });
+        if (res?.status === 'OK') {
+          setDataList(res.data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
+
+  const handleDeleteClose = () => {
+    setOpenDelete(false);
+    setSelectData({});
+  };
+
+  const handleDelete = async () => {
+    try {
+      const { accessToken } = await getAuthToken();
+      if (accessToken && selectData) {
+        // call api delete
+        const res = await Delete(`sanpham/${selectData.id}`, {
+          headers: {
+            Authorization: `Token ${accessToken}`,
+          },
+        });
+        if (res?.status === 'OK') {
+          getList();
+          enqueueSnackbar(res?.message, { variant: 'success' });
+          handleDeleteClose();
+        } else {
+          enqueueSnackbar('Khóa thất bại', { variant: 'error' });
         }
       }
-    };
-  
-    const handleClickOpen = () => {
-      setOpen(false);
-    };
-    const handleClose = () => {
-      setOpen(false);
-    };
-    const handleOnChange = (e) => {
-      console.log(e.target.files[0]);
-      setFile(e.target.files[0]);
-    };
-  
-    return (
-      <>
-        <Container>
-          <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-            <Typography variant="h4" gutterBottom>
-              Danh sách hóa đơn
-            </Typography>
-            <Button
-              variant="contained"
-              startIcon={<Iconify icon="eva:plus-fill" />}
-              onClick={() => {
-                setOpen(true);
-              }}
-            >
-              Thêm hóa đơn
-            </Button>
-          </Stack>
-          <Stack direction="row" flexWrap="wrap-reverse" alignItems="center" justifyContent="flex-end" sx={{ mb: 5 }}>
-            <div style={{ height: 400, width: '100%' }}>
-              <DataGrid
-                rows={rows}
-                columns={columns}
-                autoHeight
-                disableRowSelectionOnClick
-                initialState={{
-                  pagination: {
-                    paginationModel: { page: 0, pageSize: 5 },
-                  },
-                }}
-                pageSizeOptions={[5, 10]}                
-                rowHeight={100}
-              />
-            </div>
-          </Stack>
-          <FormDialog
-            open={open}
-            title="Thêm mới hóa đơn"
-            ok="Thêm mới"
-            close="Đóng"
-            handleClickOpen={handleClickOpen}
-            handleClose={handleClose}
-          >
-            <Box component="form" noValidate autoComplete="off">
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
-                  <TextField id="name" label="Tên khách hàng" multiline  fullWidth />
-                  {/* rows={2} */}
-                </Grid>
-                <Grid item xs={6}>
-                  <TextField id="diaChi" label="Địa chỉ" fullWidth />
-                </Grid>
-                <Grid item xs={6}>
-                  <TextField id="soDienThoai" label="Số điện thoại" fullWidth />
-                </Grid>
-                <Grid item xs={6}>
-                  <TextField id="ghiChu" label="Ghi chú" fullWidth />
-                </Grid>
-                <Grid item xs={6}>
-                  <TextField id="trangThaiThanhToan" label="Thanh toán" fullWidth />
-                </Grid>
-                
-                <Grid item xs={6}>
-                  <TextField id="soTienTraGop" label="Sô tiền trả góp" fullWidth />
-                </Grid>
-                <Grid item xs={6}>
-                  <TextField id="soTienTraTruoc" label="Số tiền trả trước" fullWidth />
-                </Grid>
-                <Grid item xs={6}>
-                  <TextField id="soTienTraGop" label="Số tiền trả góp" fullWidth />
-                </Grid>
-                
-                <Grid item xs={12}>
-                    <label htmlFor="raised-button-file">
-                    <Button variant="contained" component="span" style={{ height: '100%', width: 260 }}>
-                        Upload File chi tiết hóa đơn.
-                    </Button>
-                    <input
-                        accept=".xlsx, .xls"
-                        id="raised-button-file"
-                        multiple
-                        type="file"
-                        style={{ display: 'none' }}
-                        onChange={handleOnChangeUpload}
-                    />
-                    </label>
-                    {selectedFile && (
-                    <p>Selected file: {selectedFile.name}</p>
-                    )}
-                </Grid>
-              </Grid>
-            </Box>
-          </FormDialog>
-        </Container>
-      </>
-    );
-  }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getList();
+  }, []);
+
+  return (
+    <Container>
+      <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+        <Typography variant="h4" gutterBottom>
+          Danh sách hóa đơn
+        </Typography>
+        <Button
+          variant="contained"
+          startIcon={<Iconify icon="eva:plus-fill" />}
+          onClick={() => {
+            setOpen(true);
+          }}
+        >
+          Thêm hóa đơn
+        </Button>
+      </Stack>
+      <Stack direction="row" flexWrap="wrap-reverse" alignItems="center" justifyContent="flex-end" sx={{ mb: 5 }}>
+        <div style={{ height: 400, width: '100%' }}>
+          <DataGrid
+            rows={dataList}
+            columns={columns}
+            autoHeight
+            disableRowSelectionOnClick
+            initialState={{
+              pagination: {
+                paginationModel: { page: 0, pageSize: 5 },
+              },
+            }}
+            pageSizeOptions={[5, 10]}
+            rowHeight={100}
+          />
+        </div>
+      </Stack>
+      <SearchTable>
+        <TextField name="tenNhaCungCap" label="Tên nhà cung cấp" />
+      </SearchTable>
+      <FormDialogSubmit
+        open={open}
+        title="Thêm mới hóa đơn"
+      >
+        <Box component="form" noValidate autoComplete="off">
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField id="name" label="Tên khách hàng" multiline fullWidth />
+              {/* rows={2} */}
+            </Grid>
+            <Grid item xs={6}>
+              <TextField id="diaChi" label="Địa chỉ" fullWidth />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField id="soDienThoai" label="Số điện thoại" fullWidth />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField id="ghiChu" label="Ghi chú" fullWidth />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField id="trangThaiThanhToan" label="Thanh toán" fullWidth />
+            </Grid>
+
+            <Grid item xs={6}>
+              <TextField id="soTienTraGop" label="Sô tiền trả góp" fullWidth />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField id="soTienTraTruoc" label="Số tiền trả trước" fullWidth />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField id="soTienTraGop" label="Số tiền trả góp" fullWidth />
+            </Grid>
+          </Grid>
+          <div style={{ display: 'flex', justifyContent: 'end', marginTop: '20px' }}>
+            <Button onClick={handleClose}>Đóng</Button>
+            <Button type="submit">Hoàn tất</Button>
+          </div>
+        </Box>
+      </FormDialogSubmit>
+      <FormDialog
+        open={openDelete}
+        title="Bạn có chắc chắn muốn khóa không ?"
+        ok="Khóa"
+        close="Đóng"
+        handleClickOpen={() => { }}
+        handleClose={handleDeleteClose}
+        handleSubmit={handleDelete}
+      >
+        <Box component="form" noValidate autoComplete="off" style={{ marginTop: '10px' }}>
+          <></>
+        </Box>
+      </FormDialog>
+    </Container>
+  );
+}

@@ -42,3 +42,13 @@
     color: red;
   }
 }
+
+.detailAction {
+  font-weight: 700;
+  color: blue;
+
+  &:hover {
+    cursor: pointer;
+    font-size: 16px;
+  }
+}
