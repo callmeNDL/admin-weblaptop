@@ -63,7 +63,7 @@ import SearchTable from '../components/search/SeachTable';
         });
     const columns = [
       { field: 'id', headerName: 'ID', width: 90 },
-      { field: 'name', headerName: 'Tên danh mục', width: 200 },
+      { field: 'name', headerName: 'Tên danh mục', width: 180 },
       // {
       //   field: 'hinhAnh',
       //   headerName: 'Hinh ảnh',
@@ -82,11 +82,28 @@ import SearchTable from '../components/search/SeachTable';
       //   ),
       // },
       
-      { field: 'percentDiscount', headerName: 'Giảm giá', width: 110,align: 'center' },
-      { field: 'createDate', headerName: 'Ngày đăng', width: 140,align: 'center' },
-      { field: 'description', headerName: 'Mô tả', width: 220,align: 'center' },
-      { field: 'closeDate', headerName: 'Ngày kết thúc', width: 140,align: 'center' },
-      
+      { field: 'percentDiscount', headerName: 'Giảm giá', width: 90,align: 'center' },
+      // { field: 'createDate', headerName: 'Ngày đăng', width: 140,align: 'center' },
+      {
+        field: 'createDate',
+        headerName: 'Ngày đăng',
+        width: 130,
+        align: 'center',
+        renderCell: (params) => (
+          <div>{new Date(params.row.createDate).toLocaleDateString('en-GB')}</div>
+        ),
+      },
+      { field: 'description', headerName: 'Mô tả', width: 290,align: 'center' },
+      // { field: 'closeDate', headerName: 'Ngày kết thúc', width: 140,align: 'center' },
+      {
+        field: 'closeDate',
+        headerName: 'Ngày kết thúc',
+        width: 130,
+        align: 'center',
+        renderCell: (params) => (
+          <div>{new Date(params.row.closeDate).toLocaleDateString('en-GB')}</div>
+        ),
+      },
       {
         field: 'active',
         headerName: 'Trạng thái',

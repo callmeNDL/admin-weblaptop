@@ -63,7 +63,7 @@ import SearchTable from '../components/search/SeachTable';
         align: 'center',
         flex: 1,
         renderCell: (params) => (
-          <div style={{ width: 550, display: 'flex', alignItems: 'center', whiteSpace: 'normal', gap: 10 }}>
+          <div style={{ width: 450, display: 'flex', alignItems: 'center', whiteSpace: 'normal', gap: 10 }}>
             <img
               src={params.row && params.row?.hinhAnh[0]?.path}
               alt="img-product-cart"
@@ -73,8 +73,15 @@ import SearchTable from '../components/search/SeachTable';
           </div>
         ),
       },
-      { field: 'createDate', headerName: 'Ngày đăng', width: 110 },
-     
+      // { field: 'createDate', headerName: 'Ngày đăng', width: 110 },
+      {
+        field: 'createDate',
+        headerName: 'Ngày đăng',
+        width: 200,
+        renderCell: (params) => (
+          <div>{new Date(params.row.createDate).toLocaleDateString('en-GB')}</div>
+        ),
+      },
      
       {
         field: 'active',

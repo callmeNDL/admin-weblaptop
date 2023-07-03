@@ -50,8 +50,15 @@ export default function Company() {
   const columns = [
     { field: 'id', headerName: 'ID', width: 90 },
     { field: 'tongTien', headerName: 'Tổng tiền', width: 180 },
-    { field: 'createDate', headerName: 'Ngày nhập', width: 200 },
-    
+    // { field: 'createDate', headerName: 'Ngày nhập', width: 200 },
+    {
+      field: 'createDate',
+      headerName: 'Ngày nhập',
+      width: 200,
+      renderCell: (params) => (
+        <div>{new Date(params.row.createDate).toLocaleDateString('en-GB')}</div>
+      ),
+    },    
     {
       field: 'active',
       headerName: 'Trạng thái',

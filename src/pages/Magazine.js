@@ -52,7 +52,15 @@ export default function Company() {
     { field: 'id', headerName: 'ID', width: 90 },
     { field: 'tieuDe', headerName: 'Tiêu đề', width: 180 },
     { field: 'noiDung', headerName: 'Nội dung', width: 200 },
-    { field: 'createDate', headerName: 'Ngày tạo', width: 200 },
+    // { field: 'createDate', headerName: 'Ngày tạo', width: 200 },
+    {
+      field: 'createDate',
+      headerName: 'Ngày tạo',
+      width: 200,
+      renderCell: (params) => (
+        <div>{new Date(params.row.createDate).toLocaleDateString('en-GB')}</div>
+      ),
+    },
     {
       field: 'active',
       headerName: 'Trạng thái',
