@@ -34,6 +34,7 @@ const Warehouse = () => {
   const [openAddItem, setOpenAddItem] = useState(false);
   const [dataList, setDataList] = useState([]);
   const [dataNSX, setDataNSX] = useState([]);
+  const [dataProductNSX, setDataProductNSX] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [openDelete, setOpenDelete] = useState(false);
   const [selectData, setSelectData] = useState({});
@@ -41,14 +42,17 @@ const Warehouse = () => {
   const {
     register,
     reset,
+    watch,
+    setValue,
     formState: { errors },
     handleSubmit,
   } = useForm({
     defaultValues: {
-      tenNhaCungCap: '',
+      nhasanxuat: '',
       diaChi: '',
       email: '',
       soDienThoai: '',
+      sanphamNSX: ''
     },
   });
   const columns = [
@@ -63,7 +67,7 @@ const Warehouse = () => {
     //     <div>{new Date(params.row.createDate).toLocaleDateString('en-GB')}</div>
     //   ),
     // },    
-    { field: 'tenNhaCungCap', headerName: 'Tên nhà cung câp', width: 180 },
+    { field: 'nhasanxuat', headerName: 'Tên nhà cung câp', width: 180 },
     { field: 'email', headerName: 'Email', width: 200 },
     { field: 'diaChi', headerName: 'Địa chỉ', width: 210 },
     {
@@ -108,7 +112,7 @@ const Warehouse = () => {
 
   const columnPhieuNhap = [
     { field: 'id', headerName: 'ID', width: 90 },
-    { field: 'tenNhaCungCap', headerName: 'Tên nhà cung câp', width: 180 },
+    { field: 'nhasanxuat', headerName: 'Tên nhà cung câp', width: 180 },
     { field: 'email', headerName: 'Email', width: 200 },
     { field: 'diaChi', headerName: 'Địa chỉ', width: 210 },
     {
@@ -119,6 +123,10 @@ const Warehouse = () => {
       align: 'center',
     },
   ]
+
+
+  const watchProducer = watch('nhasanxuat', '')
+  const watchsanphamNSX = watch('sanphamNSX', '')
 
   useEffect(() => {
     getList();
@@ -168,7 +176,7 @@ const Warehouse = () => {
     setOpen(false);
     setSelectData('');
     reset({
-      tenNhaCungCap: '',
+      nhasanxuat: '',
       diaChi: '',
       email: '',
       soDienThoai: '',
@@ -256,6 +264,74 @@ const Warehouse = () => {
     setSelectData('');
   };
 
+  const getListProduct = async (name) => {
+    const { accessToken } = await getAuthToken();
+    if (accessToken) {
+      try {
+        const res = await get(`/sanpham/nhasanxuat/${name}`, {
+          headers: {
+            Authorization: `Token ${accessToken}`,
+          },
+        });
+        if (res?.status === 'OK') {
+          const arrResult = res?.data.map((item) => (
+            {
+              value: item.id,
+              label: item.tenSanPham,
+              ...item,
+            }
+          ))
+          setDataProductNSX(arrResult)
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (watchProducer) {
+      const producerName = dataNSX?.find((item) => item.value === watchProducer)?.label
+      console.log(producerName, 'producerName');
+      if (producerName) {
+        getListProduct(producerName)
+      }
+    }
+  }, [watchProducer])
+
+  useEffect(() => {
+    if (watchsanphamNSX) {
+      const sanpham = dataProductNSX?.find((item) => item.id === watchsanphamNSX)
+      if (sanpham) {
+        let soLoai = 0
+        sanpham?.thuocTinhs.forEach((item) => {
+          if (item.loai) {
+            soLoai = item.loai
+          }
+        })
+
+        const arrThuocTinh = []
+
+        if (soLoai > 0) {
+          // eslint-disable-next-line no-plusplus
+          for (let index = 1; index <= soLoai; index++) {
+            const arr = sanpham?.thuocTinhs.filter((item) => item.loai === index)
+            const arrTotal = {}
+            if (arr) {
+              arr?.forEach((item) => {
+                arrTotal[`${item.tenThuocTinh}`] = item.giaTriThuocTinh
+              })
+            }
+            arrThuocTinh.push(arrTotal)
+          }
+        }
+
+        console.log(arrThuocTinh, 'arrThuocTinh');
+      }
+    }
+  }, [watchsanphamNSX])
+
+
   return (
     <>
       <Container>
@@ -274,7 +350,7 @@ const Warehouse = () => {
           </Button>
         </Stack>
         <SearchTable>
-          <TextField name="tenNhaCungCap" label="Tên nhà cung cấp" />
+          <TextField name="nhasanxuat" label="Tên nhà cung cấp" />
         </SearchTable>
         <Stack direction="row" flexWrap="wrap-reverse" alignItems="center" justifyContent="flex-end" sx={{ mb: 5 }}>
           <div style={{ height: 400, width: '100%' }}>
@@ -301,13 +377,13 @@ const Warehouse = () => {
                   <TextField
                     select
                     fullWidth
-                    name="tenNhaCungCap"
+                    name="nhasanxuat"
                     label="Tên nhà cung cấp"
-                    inputProps={register('tenNhaCungCap', {
+                    inputProps={register('nhasanxuat', {
                       required: 'Nhập tên nhà cung cấp!',
                     })}
-                    error={errors.tenNhaCungCap}
-                    helperText={errors.tenNhaCungCap?.message}
+                    error={errors.nhasanxuat}
+                    helperText={errors.nhasanxuat?.message}
                   >
                     {dataNSX && dataNSX?.map((item) => {
                       return (
@@ -346,7 +422,7 @@ const Warehouse = () => {
           </form>
         </FormDialogSubmit>
         <Dialog
-          fullWidth='xs'
+          fullWidth='lg'
           open={openAddItem}
           onClose={handleClose}
           title={`${true ? 'Cập nhật' : 'Thêm mới'} sản phẩm`}
@@ -361,15 +437,15 @@ const Warehouse = () => {
                   <TextField
                     select
                     fullWidth
-                    name="tenNhaCungCap"
+                    name="sanphamNSX"
                     label="Thêm sản phẩm nhập"
-                    inputProps={register('tenNhaCungCap', {
+                    inputProps={register('sanphamNSX', {
                       required: 'Nhập tên nhà cung cấp!',
                     })}
-                    error={errors.tenNhaCungCap}
-                    helperText={errors.tenNhaCungCap?.message}
+                    error={errors.sanphamNSX}
+                    helperText={errors.sanphamNSX?.message}
                   >
-                    {dataNSX && dataNSX?.map((item) => {
+                    {dataProductNSX && dataProductNSX?.map((item) => {
                       return (
                         <MenuItem value={item.value} key={item.value}>
                           {item.label}
@@ -379,6 +455,16 @@ const Warehouse = () => {
                   </TextField>
                 </FormControl>
 
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  name="giaSanPham"
+                  {...register('giaSanPham', { required: 'Nhập so giá sản phẩm' })}
+                  fullWidth
+                  error={!!errors.giaSanPham}
+                  helperText={errors.giaSanPham?.message}
+                  label="Giá sản phẩm"
+                />
               </Grid>
               <Grid item xs={12}>
                 <TextField
