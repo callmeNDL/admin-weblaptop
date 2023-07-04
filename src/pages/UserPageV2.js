@@ -393,7 +393,6 @@ export default function UsersPageV2() {
                 label="Ten"
               />
             </Grid>
-
             <Grid item xs={6}>
               <TextField
                 label="Email"

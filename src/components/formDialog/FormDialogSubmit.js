@@ -14,18 +14,18 @@ export default function FormDialogSubmit({
   handleClose,
   ok,
   close,
+  size = 'sm',
 }) {
   return (
-    <div>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
-        <DialogContent>{children}</DialogContent>
-      </Dialog>
-    </div>
+    <Dialog
+      maxWidth={size}
+      open={open}
+      onClose={handleClose}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+    >
+      <DialogTitle id="alert-dialog-title" >{title}</DialogTitle>
+      <DialogContent sx={{ paddingTop: '20px' }}>{children}</DialogContent>
+    </Dialog>
   );
 }

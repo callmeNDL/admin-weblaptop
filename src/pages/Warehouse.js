@@ -9,14 +9,15 @@ import {
   Box,
   Grid,
   FormControl,
-  InputLabel,
-  Select,
   MenuItem,
-  Input,
+  Dialog,
+  DialogTitle,
+  DialogContentText,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
 import { enqueueSnackbar } from 'notistack';
-import { Tag } from '@mui/icons-material';
 import { DataGrid } from '@mui/x-data-grid';
 import Iconify from '../components/iconify';
 import FormDialog from '../components/formDialog/FormDialog';
@@ -28,9 +29,11 @@ import SearchTable from '../components/search/SeachTable';
 
 // ----------------------------------------------------------------------
 
-export default function Company() {
+const Warehouse = () => {
   const [open, setOpen] = useState(false);
+  const [openAddItem, setOpenAddItem] = useState(false);
   const [dataList, setDataList] = useState([]);
+  const [dataNSX, setDataNSX] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [openDelete, setOpenDelete] = useState(false);
   const [selectData, setSelectData] = useState({});
@@ -42,23 +45,34 @@ export default function Company() {
     handleSubmit,
   } = useForm({
     defaultValues: {
-      tongTien: '',
-      createDate: '',
-      active: '',       
+      tenNhaCungCap: '',
+      diaChi: '',
+      email: '',
+      soDienThoai: '',
     },
   });
   const columns = [
     { field: 'id', headerName: 'ID', width: 90 },
-    { field: 'tongTien', headerName: 'Tổng tiền', width: 180 },
-    // { field: 'createDate', headerName: 'Ngày nhập', width: 200 },
+    // { field: 'tongTien', headerName: 'Tổng tiền', width: 180 },
+    // // { field: 'createDate', headerName: 'Ngày nhập', width: 200 },
+    // {
+    //   field: 'createDate',
+    //   headerName: 'Ngày nhập',
+    //   width: 200,
+    //   renderCell: (params) => (
+    //     <div>{new Date(params.row.createDate).toLocaleDateString('en-GB')}</div>
+    //   ),
+    // },    
+    { field: 'tenNhaCungCap', headerName: 'Tên nhà cung câp', width: 180 },
+    { field: 'email', headerName: 'Email', width: 200 },
+    { field: 'diaChi', headerName: 'Địa chỉ', width: 210 },
     {
-      field: 'createDate',
-      headerName: 'Ngày nhập',
-      width: 200,
-      renderCell: (params) => (
-        <div>{new Date(params.row.createDate).toLocaleDateString('en-GB')}</div>
-      ),
-    },    
+      field: 'soDienThoai',
+      headerName: 'Số điện thoại',
+      type: 'number',
+      minWidth: 160,
+      align: 'center',
+    },
     {
       field: 'active',
       headerName: 'Trạng thái',
@@ -92,9 +106,45 @@ export default function Company() {
     },
   ];
 
+  const columnPhieuNhap = [
+    { field: 'id', headerName: 'ID', width: 90 },
+    { field: 'tenNhaCungCap', headerName: 'Tên nhà cung câp', width: 180 },
+    { field: 'email', headerName: 'Email', width: 200 },
+    { field: 'diaChi', headerName: 'Địa chỉ', width: 210 },
+    {
+      field: 'soDienThoai',
+      headerName: 'Số điện thoại',
+      type: 'number',
+      minWidth: 160,
+      align: 'center',
+    },
+  ]
+
   useEffect(() => {
     getList();
+    getListNhasanxuat()
   }, []);
+
+  const getListNhasanxuat = async () => {
+    const { accessToken } = await getAuthToken();
+    if (accessToken) {
+      try {
+        const res = await get('nhasanxuat', {
+          headers: {
+            Authorization: `Token ${accessToken}`,
+          },
+        });
+        if (res?.status === 'OK') {
+          const result = res?.data.map((item) => ({ value: item.id, label: item.tenNhaSanXuat }))
+          if (result) {
+            setDataNSX(result)
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }
 
   const getList = async () => {
     const { accessToken } = await getAuthToken();
@@ -152,7 +202,6 @@ export default function Company() {
         console.log(error);
       }
     } else {
-      console.log('AaaAA');
 
       // ngược lại nếu đẫ chọn 1 thằng rồi thì la cap nhật
       try {
@@ -221,12 +270,12 @@ export default function Company() {
               setOpen(true);
             }}
           >
-            Thêm mới
+            Thêm nhà sản xuất
           </Button>
         </Stack>
-        {/* <SearchTable>
+        <SearchTable>
           <TextField name="tenNhaCungCap" label="Tên nhà cung cấp" />
-        </SearchTable> */}
+        </SearchTable>
         <Stack direction="row" flexWrap="wrap-reverse" alignItems="center" justifyContent="flex-end" sx={{ mb: 5 }}>
           <div style={{ height: 400, width: '100%' }}>
             <DataGrid
@@ -239,36 +288,56 @@ export default function Company() {
                   paginationModel: { page: 0, pageSize: 5 },
                 },
               }}
-              pageSizeOptions={[5, 10]}              
+              pageSizeOptions={[5, 10]}
               rowHeight={100}
             />
           </div>
         </Stack>
-        <FormDialogSubmit open={open} title={`${selectData?.id ? 'Cập nhật' : 'Thêm mới'} phiếu`}>
-          <form onSubmit={handleSubmit(onSubmit)}>
+        <FormDialogSubmit size='lg' open={open} title={`${selectData?.id ? 'Cập nhật' : 'Thêm mới'} phiếu`}>
+          <form onSubmit={handleSubmit(onSubmit)} style={{ paddingTop: '20px' }}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
-                <TextField
-                  name="tongTien"
-                  {...register('tongTien', { required: 'Nhập tổng tiền' })}
-                  label="tổng tiền"
-                  fullWidth
-                  error={!!errors.tongTien}
-                  helperText={errors.tongTien?.message}
-                />
+                <FormControl fullWidth>
+                  <TextField
+                    select
+                    fullWidth
+                    name="tenNhaCungCap"
+                    label="Tên nhà cung cấp"
+                    inputProps={register('tenNhaCungCap', {
+                      required: 'Nhập tên nhà cung cấp!',
+                    })}
+                    error={errors.tenNhaCungCap}
+                    helperText={errors.tenNhaCungCap?.message}
+                  >
+                    {dataNSX && dataNSX?.map((item) => {
+                      return (
+                        <MenuItem value={item.value} key={item.value}>
+                          {item.label}
+                        </MenuItem>
+                      );
+                    })}
+                  </TextField>
+                </FormControl>
               </Grid>
               <Grid item xs={12}>
-                <TextField
-                  name="createDate"
-                  {...register('createDate', { required: 'Nhập ngày tạo' })}
-                  label="Ngày tạo phiếu"
-                  fullWidth
-                  type="date"
-                  error={!!errors.createDate}
-                  helperText={errors.createDate?.message}
-                />
+                <Box sx={{ height: 400, width: '100%' }}>
+                  <DataGrid
+                    rows={[]}
+                    columns={columnPhieuNhap}
+                    initialState={{
+                      pagination: {
+                        paginationModel: {
+                          pageSize: 5,
+                        },
+                      },
+                    }}
+                    pageSizeOptions={[5]}
+                    hideFooter
+                    disableRowSelectionOnClick
+                  />
+                </Box>
+                <Button onClick={() => { setOpenAddItem(!openAddItem) }}>Thêm sản phẩm</Button>
               </Grid>
-              
             </Grid>
             <div style={{ display: 'flex', justifyContent: 'end', marginTop: '20px' }}>
               <Button onClick={handleClose}>Đóng</Button>
@@ -276,12 +345,64 @@ export default function Company() {
             </div>
           </form>
         </FormDialogSubmit>
+        <Dialog
+          fullWidth='xs'
+          open={openAddItem}
+          onClose={handleClose}
+          title={`${true ? 'Cập nhật' : 'Thêm mới'} sản phẩm`}
+        >
+          <DialogTitle id="alert-dialog-title">
+            {"Thêm sản phẩm vào phiếu nhập"}
+          </DialogTitle>
+          <form onSubmit={handleSubmit(onSubmit)} style={{ padding: '20px' }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <FormControl fullWidth>
+                  <TextField
+                    select
+                    fullWidth
+                    name="tenNhaCungCap"
+                    label="Thêm sản phẩm nhập"
+                    inputProps={register('tenNhaCungCap', {
+                      required: 'Nhập tên nhà cung cấp!',
+                    })}
+                    error={errors.tenNhaCungCap}
+                    helperText={errors.tenNhaCungCap?.message}
+                  >
+                    {dataNSX && dataNSX?.map((item) => {
+                      return (
+                        <MenuItem value={item.value} key={item.value}>
+                          {item.label}
+                        </MenuItem>
+                      );
+                    })}
+                  </TextField>
+                </FormControl>
+
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  name="soLuong"
+                  {...register('soLuong', { required: 'Nhập so Luong' })}
+                  fullWidth
+                  error={!!errors.soLuong}
+                  helperText={errors.soLuong?.message}
+                  label="Số lượng"
+                />
+              </Grid>
+            </Grid>
+            <div style={{ display: 'flex', justifyContent: 'end', marginTop: '20px' }}>
+              <Button onClick={() => { setOpenAddItem(false) }}>Đóng</Button>
+              <Button type="submit">Hoàn tất</Button>
+            </div>
+          </form>
+        </Dialog>
         <FormDialog
           open={openDelete}
           title="Bạn có chắc chắn muốn khóa không ?"
           ok="Khóa"
           close="Đóng"
-          handleClickOpen={() => {}}
+          handleClickOpen={() => { }}
           handleClose={handleDeleteClose}
           handleSubmit={handleDelete}
         >
@@ -289,7 +410,8 @@ export default function Company() {
             <></>
           </Box>
         </FormDialog>
-      </Container>
+      </Container >
     </>
   ); // thiếu form thêm, xóa cần được hiện ra
 }
+export default Warehouse
