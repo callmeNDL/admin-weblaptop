@@ -16,7 +16,7 @@ import {
   DialogContent,
   DialogActions,
 } from '@mui/material';
-import { Controller, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { enqueueSnackbar } from 'notistack';
 import { DataGrid } from '@mui/x-data-grid';
 import Iconify from '../components/iconify';
@@ -33,8 +33,11 @@ const Warehouse = () => {
   const [open, setOpen] = useState(false);
   const [openAddItem, setOpenAddItem] = useState(false);
   const [dataList, setDataList] = useState([]);
+  const [dataListSP, setDataListSP] = useState([]);
   const [dataNSX, setDataNSX] = useState([]);
+  const [dataNCC, setDataNCC] = useState([]);
   const [dataProductNSX, setDataProductNSX] = useState([]);
+  const [dataThuocTinh, setDataThuocTinh] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [openDelete, setOpenDelete] = useState(false);
   const [selectData, setSelectData] = useState({});
@@ -44,15 +47,31 @@ const Warehouse = () => {
     reset,
     watch,
     setValue,
+    getValue,
     formState: { errors },
     handleSubmit,
   } = useForm({
     defaultValues: {
       nhasanxuat: '',
-      diaChi: '',
-      email: '',
-      soDienThoai: '',
-      sanphamNSX: ''
+      tongTien: '',
+      chiTietPhieuNhapHang: [],
+    },
+  });
+
+  const {
+    register: register2,
+    watch: watch2,
+    reset: reset2,
+    formState: { errors: errors2 },
+    handleSubmit: handleSubmit2,
+  } = useForm({
+    defaultValues: {
+      id: '',
+      giaSanPham: '',
+      soLuong: "",
+      loai: '',
+      sanphamNSX: '',
+      tongTien: '',
     },
   });
   const columns = [
@@ -111,26 +130,25 @@ const Warehouse = () => {
   ];
 
   const columnPhieuNhap = [
-    { field: 'id', headerName: 'ID', width: 90 },
-    { field: 'nhasanxuat', headerName: 'Tên nhà cung câp', width: 180 },
-    { field: 'email', headerName: 'Email', width: 200 },
-    { field: 'diaChi', headerName: 'Địa chỉ', width: 210 },
+    { field: 'id', headerName: 'ID', width: 50 },
+    { field: 'sanphamNSX', headerName: 'Sản phẩm', width: 180 },
+    { field: 'loai', headerName: 'Option', width: 200 },
+    { field: 'soLuong', headerName: 'Số lượng', width: 100 },
     {
-      field: 'soDienThoai',
-      headerName: 'Số điện thoại',
-      type: 'number',
-      minWidth: 160,
+      field: 'giaSanPham',
+      headerName: 'Giá',
+      minWidth: 120,
       align: 'center',
     },
   ]
 
-
   const watchProducer = watch('nhasanxuat', '')
-  const watchsanphamNSX = watch('sanphamNSX', '')
+  const watchsanphamNSX = watch2('sanphamNSX', '')
 
   useEffect(() => {
     getList();
     getListNhasanxuat()
+    getListNCC();
   }, []);
 
   const getListNhasanxuat = async () => {
@@ -146,6 +164,27 @@ const Warehouse = () => {
           const result = res?.data.map((item) => ({ value: item.id, label: item.tenNhaSanXuat }))
           if (result) {
             setDataNSX(result)
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }
+
+  const getListNCC = async () => {
+    const { accessToken } = await getAuthToken();
+    if (accessToken) {
+      try {
+        const res = await get('nhacungcap', {
+          headers: {
+            Authorization: `Token ${accessToken}`,
+          },
+        });
+        if (res?.status === 'OK') {
+          const result = res?.data.map((item) => ({ value: item.id, label: item.tenNhaCungCap }))
+          if (result) {
+            setDataNCC(result)
           }
         }
       } catch (error) {
@@ -183,59 +222,56 @@ const Warehouse = () => {
     });
   };
 
-  const onSubmit = async (data) => {
-    console.log(selectData, 'selectData');
-    if (!selectData && !selectData?.id) {
-      // truong hop nay la không có seledata nghĩa là mình chưa chọn thằng nào nên n hiểu là taọ mơis
-      try {
-        if (data) {
-          const { accessToken } = await getAuthToken();
-          if (accessToken) {
-            const res = await post('phieunhaphang', data, {
-              headers: {
-                Authorization: `Token ${accessToken}`,
-              },
-            });
-            if (res?.status === 'OK') {
-              getList();
-              enqueueSnackbar('Thêm thành công', { variant: 'success' });
-              handleClose();
-            } else {
-              enqueueSnackbar('Thêm thất bại', { variant: 'error' });
-            }
-          }
-        }
-      } catch (error) {
-        enqueueSnackbar('Thêm thất bại', { variant: 'error' });
-        console.log(error);
-      }
-    } else {
+  const handleClose2 = () => {
+    setOpenAddItem(false)
+    reset2({ giaSanPham: '', soLuong: "", loai: '', sanphamNSX: '', })
 
-      // ngược lại nếu đẫ chọn 1 thằng rồi thì la cap nhật
-      try {
-        if (data) {
-          const { accessToken } = await getAuthToken();
-          if (accessToken) {
-            const res = await put(`phieunhaphang/${selectData.id}`, data, {
-              headers: {
-                Authorization: `Token ${accessToken}`,
-              },
-            });
-            if (res?.status === 'OK') {
-              getList();
-              enqueueSnackbar(res?.message, { variant: 'success' });
-              handleClose();
-            } else {
-              enqueueSnackbar('Cập nhật thất bại', { variant: 'error' });
-            }
-          }
-        }
-      } catch (error) {
-        enqueueSnackbar('Cập nhật thất bại', { variant: 'error' });
-        console.log(error);
+  }
+  const onSubmit = async (data) => {
+    try {
+      console.log(data, 'selectData');
+      let arrChiTietPhieuNhapHang = []
+
+      if (dataListSP?.length > 0) {
+        arrChiTietPhieuNhapHang = dataListSP
       }
+      const fromData = {
+        ...data,
+      }
+
+      // if (data) {
+      //   const { accessToken } = await getAuthToken();
+      //   if (accessToken) {
+      //     const res = await post('phieunhaphang', data, {
+      //       headers: {
+      //         Authorization: `Token ${accessToken}`,
+      //       },
+      //     });
+      //     if (res?.status === 'OK') {
+      //       getList();
+      //       enqueueSnackbar('Thêm thành công', { variant: 'success' });
+      //       handleClose();
+      //     } else {
+      //       enqueueSnackbar('Thêm thất bại', { variant: 'error' });
+      //     }
+      //   }
+      // }
+    } catch (error) {
+      enqueueSnackbar('Thêm thất bại', { variant: 'error' });
+      console.log(error);
     }
   };
+
+  const onSubmit2 = async (data) => {
+    setDataListSP((dataListSP) => [
+      {
+        ...data,
+        sanphamNSX: dataProductNSX?.find((item) => item.id === data.sanphamNSX)?.tenSanPham ?? '',
+        id: data?.sanphamNSX
+      },
+      ...dataListSP])
+    handleClose2()
+  }
 
   const handleDelete = async () => {
     try {
@@ -309,28 +345,38 @@ const Warehouse = () => {
             soLoai = item.loai
           }
         })
-
         const arrThuocTinh = []
-
         if (soLoai > 0) {
           // eslint-disable-next-line no-plusplus
           for (let index = 1; index <= soLoai; index++) {
             const arr = sanpham?.thuocTinhs.filter((item) => item.loai === index)
+            console.log(sanpham?.thuocTinhs, 'sanpham?.thuocTinhs');
             const arrTotal = {}
             if (arr) {
-              arr?.forEach((item) => {
-                arrTotal[`${item.tenThuocTinh}`] = item.giaTriThuocTinh
+              arr?.forEach((item, index) => {
+                arrTotal[`${item.tenThuocTinh}`] = `${item.giaTriThuocTinh} ${index === arr?.length - 1 ? '' : "/"}`
               })
+
             }
             arrThuocTinh.push(arrTotal)
           }
         }
-
-        console.log(arrThuocTinh, 'arrThuocTinh');
+        setDataThuocTinh(arrThuocTinh)
       }
     }
   }, [watchsanphamNSX])
 
+  useEffect(() => {
+    if (dataListSP.length > 0) {
+      let sum = 0
+      dataListSP.forEach((item) => { sum += (Number(item?.giaSanPham) * Number(item?.soLuong)) })
+      if (sum !== 0) {
+        setValue('tongTien', sum)
+      }
+    } else {
+      setValue('tongTien', 0)
+    }
+  }, [dataListSP])
 
   return (
     <>
@@ -353,7 +399,7 @@ const Warehouse = () => {
           <TextField name="nhasanxuat" label="Tên nhà cung cấp" />
         </SearchTable>
         <Stack direction="row" flexWrap="wrap-reverse" alignItems="center" justifyContent="flex-end" sx={{ mb: 5 }}>
-          <div style={{ height: 400, width: '100%' }}>
+          <div style={{ minHeight: 200, width: '100%' }}>
             <DataGrid
               rows={dataList}
               columns={columns}
@@ -377,13 +423,38 @@ const Warehouse = () => {
                   <TextField
                     select
                     fullWidth
-                    name="nhasanxuat"
+                    name="nhaCungCap"
                     label="Tên nhà cung cấp"
+                    inputProps={register('nhaCungCap', {
+                      required: 'Chọn nha cung cấp!',
+                    })}
+                    error={errors.nhaCungCap}
+                    helperText={errors.nhaCungCap?.message}
+
+                  >
+                    {dataNCC && dataNCC?.map((item) => {
+                      return (
+                        <MenuItem value={item.value} key={item.value}>
+                          {item.label}
+                        </MenuItem>
+                      );
+                    })}
+                  </TextField>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12}>
+                <FormControl fullWidth>
+                  <TextField
+                    select
+                    fullWidth
+                    name="nhasanxuat"
+                    label="Tên nhà san xuat"
                     inputProps={register('nhasanxuat', {
-                      required: 'Nhập tên nhà cung cấp!',
+                      required: 'Nhập tên nhà san xuat!',
                     })}
                     error={errors.nhasanxuat}
                     helperText={errors.nhasanxuat?.message}
+
                   >
                     {dataNSX && dataNSX?.map((item) => {
                       return (
@@ -395,10 +466,10 @@ const Warehouse = () => {
                   </TextField>
                 </FormControl>
               </Grid>
-              <Grid item xs={12}>
-                <Box sx={{ height: 400, width: '100%' }}>
+              <Grid item xs={12} style={{ position: 'relative' }}>
+                <Box sx={{ height: 300, width: '100%', paddingBottom: '50px' }}>
                   <DataGrid
-                    rows={[]}
+                    rows={dataListSP}
                     columns={columnPhieuNhap}
                     initialState={{
                       pagination: {
@@ -410,9 +481,22 @@ const Warehouse = () => {
                     pageSizeOptions={[5]}
                     hideFooter
                     disableRowSelectionOnClick
+
                   />
                 </Box>
-                <Button onClick={() => { setOpenAddItem(!openAddItem) }}>Thêm sản phẩm</Button>
+                <Button onClick={() => { setOpenAddItem(!openAddItem) }} style={{ position: 'absolute', top: 25, right: 0 }}>Thêm sản phẩm</Button>
+              </Grid>
+              <Grid item xs={12}>
+                <Grid item xs={12}>
+                  <TextField
+                    name="tongTien"
+                    {...register('tongTien', { required: 'Tổng tiền' })}
+                    fullWidth
+                    error={!!errors.tongTien}
+                    helperText={errors.tongTien?.message}
+                    label="Tổng tiền"
+                  />
+                </Grid>
               </Grid>
             </Grid>
             <div style={{ display: 'flex', justifyContent: 'end', marginTop: '20px' }}>
@@ -430,7 +514,7 @@ const Warehouse = () => {
           <DialogTitle id="alert-dialog-title">
             {"Thêm sản phẩm vào phiếu nhập"}
           </DialogTitle>
-          <form onSubmit={handleSubmit(onSubmit)} style={{ padding: '20px' }}>
+          <form onSubmit={handleSubmit2(onSubmit2)} style={{ padding: '20px' }}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <FormControl fullWidth>
@@ -438,12 +522,12 @@ const Warehouse = () => {
                     select
                     fullWidth
                     name="sanphamNSX"
-                    label="Thêm sản phẩm nhập"
-                    inputProps={register('sanphamNSX', {
+                    label="Thêm sản phẩm nhập."
+                    inputProps={register2('sanphamNSX', {
                       required: 'Nhập tên nhà cung cấp!',
                     })}
-                    error={errors.sanphamNSX}
-                    helperText={errors.sanphamNSX?.message}
+                    error={errors2.sanphamNSX}
+                    helperText={errors2.sanphamNSX?.message}
                   >
                     {dataProductNSX && dataProductNSX?.map((item) => {
                       return (
@@ -454,38 +538,61 @@ const Warehouse = () => {
                     })}
                   </TextField>
                 </FormControl>
-
+              </Grid>
+              <Grid item xs={12}>
+                <FormControl fullWidth>
+                  <TextField
+                    select
+                    fullWidth
+                    name="loai"
+                    label="Chọn cấu hình"
+                    inputProps={register2('loai', {
+                      required: 'Nhập tên nhà cung cấp!',
+                    })}
+                    error={errors2.loai}
+                    helperText={errors2.loai?.message}
+                  >
+                    {dataThuocTinh && dataThuocTinh?.map((item, index) => {
+                      return (
+                        <MenuItem value={Object.values(item)} key={index}>
+                          {Object.values(item)}
+                        </MenuItem>
+                      );
+                    })}
+                  </TextField>
+                </FormControl>
               </Grid>
               <Grid item xs={12}>
                 <TextField
                   name="giaSanPham"
-                  {...register('giaSanPham', { required: 'Nhập so giá sản phẩm' })}
+                  {...register2('giaSanPham', { required: 'Nhập so giá sản phẩm' })}
                   fullWidth
-                  error={!!errors.giaSanPham}
-                  helperText={errors.giaSanPham?.message}
+                  error={!!errors2.giaSanPham}
+                  helperText={errors2.giaSanPham?.message}
                   label="Giá sản phẩm"
                 />
               </Grid>
+
               <Grid item xs={12}>
                 <TextField
                   name="soLuong"
-                  {...register('soLuong', { required: 'Nhập so Luong' })}
+                  {...register2('soLuong', { required: 'Nhập so Luong' })}
                   fullWidth
-                  error={!!errors.soLuong}
-                  helperText={errors.soLuong?.message}
+                  error={!!errors2.soLuong}
+                  helperText={errors2.soLuong?.message}
                   label="Số lượng"
                 />
               </Grid>
             </Grid>
             <div style={{ display: 'flex', justifyContent: 'end', marginTop: '20px' }}>
-              <Button onClick={() => { setOpenAddItem(false) }}>Đóng</Button>
+              <Button onClick={handleClose2}>Đóng</Button>
               <Button type="submit">Hoàn tất</Button>
             </div>
           </form>
         </Dialog>
         <FormDialog
           open={openDelete}
-          title="Bạn có chắc chắn muốn khóa không ?"
+          title="Bạn có chắc chắn muốn khóa không?"
           ok="Khóa"
           close="Đóng"
           handleClickOpen={() => { }}

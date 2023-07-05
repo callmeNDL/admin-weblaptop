@@ -226,7 +226,7 @@ export default function Company() {
           </Button>
         </Stack>
         <SearchTable>
-          <TextField name="tenNhaCungCap" label="Tên nhà cung cấp" />
+          <TextField name="tenNhaCungCap" label="Tên nhà cung cấp"  style={{ width: 400 }}/>
         </SearchTable>
         <Stack direction="row" flexWrap="wrap-reverse" alignItems="center" justifyContent="flex-end" sx={{ mb: 5 }}>
           <div style={{ height: 400, width: '100%' }}>
