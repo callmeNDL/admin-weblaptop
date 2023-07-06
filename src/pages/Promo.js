@@ -117,16 +117,24 @@ import SearchTable from '../components/search/SeachTable';
         ),
       },
       {
-        field: 'acb',
+        field: 'action',
         headerName: 'Actions',
         minWidth: 100,
         align: 'center',
-        renderCell: (params) =>
-          ActionButtons(
-            params.row,
-            () => {},
-            () => {}
-          ),
+        renderCell: (params) => (
+          <ActionButtons
+            handleClickOpen={() => {
+              // set gia tri muon update (daang chon)
+              setSelectData(params.row);
+              reset(params.row);
+              setOpen(true);
+            }}
+            handleClickDelOpen={() => {
+              setSelectData(params.row);
+              setOpenDelete(true);
+            }}
+          />
+        ),
       },
     ];
   
@@ -217,7 +225,8 @@ import SearchTable from '../components/search/SeachTable';
       setFile(e.target.files[0]);
     };
     const onSubmit = async (data) => {
-      if (!selectData) {
+      console.log(selectData, 'selectData');
+      if (!selectData && !selectData?.id) {
         
         try {
           if (data) {
@@ -317,7 +326,7 @@ import SearchTable from '../components/search/SeachTable';
           <Stack direction="row" flexWrap="wrap-reverse" alignItems="center" justifyContent="flex-end" sx={{ mb: 5 }}>
             <div style={{ height: 400, width: '100%' }}>
               <DataGrid
-                rows={dataList ?? []}
+                rows={dataList}
                 columns={columns}
                 autoHeight
                 disableRowSelectionOnClick
@@ -422,8 +431,8 @@ import SearchTable from '../components/search/SeachTable';
         <FormDialog
           open={openDelete}
           title="Bạn có chắc chắn muốn khóa không ?"
-          ok="Xoá"
-          close="Khóa"
+          ok="Khóa"
+          close="Đóng"
           handleClickOpen={() => {}}
           handleClose={handleDeleteClose}
           handleSubmit={handleDelete}
