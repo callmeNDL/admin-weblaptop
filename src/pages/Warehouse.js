@@ -87,14 +87,17 @@ const Warehouse = () => {
     //   ),
     // },    
     { field: 'nhasanxuat', headerName: 'Tên nhà cung câp', width: 180 },
-    { field: 'email', headerName: 'Email', width: 200 },
-    { field: 'diaChi', headerName: 'Địa chỉ', width: 210 },
+    { field: 'email', headerName: 'Nhà xản xuất', width: 200 },
+    { field: 'tongTien', headerName: 'Tổng tiền', width: 140 },
     {
-      field: 'soDienThoai',
-      headerName: 'Số điện thoại',
+      field: 'createDate',
+      headerName: 'Ngày tạo',
       type: 'number',
-      minWidth: 160,
+      minWidth: 90,
       align: 'center',
+      renderCell: (params) => (
+        <div>{new Date(params.row.createDate).toLocaleDateString('en-GB')}</div>
+      ),
     },
     {
       field: 'active',
@@ -233,29 +236,42 @@ const Warehouse = () => {
       let arrChiTietPhieuNhapHang = []
 
       if (dataListSP?.length > 0) {
-        arrChiTietPhieuNhapHang = dataListSP
-      }
-      const fromData = {
-        ...data,
+        arrChiTietPhieuNhapHang = dataListSP.map((item) => ({
+          giaNhap: item.giaSanPham,
+          soLuong: item.soLuong,
+          sanPham: {
+            id: item.id
+          }
+        }))
       }
 
-      // if (data) {
-      //   const { accessToken } = await getAuthToken();
-      //   if (accessToken) {
-      //     const res = await post('phieunhaphang', data, {
-      //       headers: {
-      //         Authorization: `Token ${accessToken}`,
-      //       },
-      //     });
-      //     if (res?.status === 'OK') {
-      //       getList();
-      //       enqueueSnackbar('Thêm thành công', { variant: 'success' });
-      //       handleClose();
-      //     } else {
-      //       enqueueSnackbar('Thêm thất bại', { variant: 'error' });
-      //     }
-      //   }
-      // }
+      console.log(arrChiTietPhieuNhapHang, 'arrChiTietPhieuNhapHang');
+
+      const fromData = {
+        nhaCungCap: data?.nhaCungCap ?? 0,
+        tongTien: data?.tongTien ?? 0,
+        nhaSanXuat: data?.nhasanxuat,
+        chiTietPhieuNhapHang: arrChiTietPhieuNhapHang
+      }
+
+      if (data) {
+        const { accessToken } = await getAuthToken();
+        if (accessToken) {
+          const res = await post('phieunhaphang', fromData, {
+            headers: {
+              Authorization: `Token ${accessToken}`,
+            },
+          });
+          console.log(res, "check ress");
+          if (res?.status === 'OK') {
+            getList();
+            enqueueSnackbar('Thêm thành công', { variant: 'success' });
+            handleClose();
+          } else {
+            enqueueSnackbar('Thêm thất bại', { variant: 'error' });
+          }
+        }
+      }
     } catch (error) {
       enqueueSnackbar('Thêm thất bại', { variant: 'error' });
       console.log(error);
@@ -378,6 +394,9 @@ const Warehouse = () => {
     }
   }, [dataListSP])
 
+  useEffect(() => {
+    getList();
+  }, [])
   return (
     <>
       <Container>
@@ -522,7 +541,7 @@ const Warehouse = () => {
                     select
                     fullWidth
                     name="sanphamNSX"
-                    label="Thêm sản phẩm nhập."
+                    label="Thêm sản phẩm nhập"
                     inputProps={register2('sanphamNSX', {
                       required: 'Nhập tên nhà cung cấp!',
                     })}

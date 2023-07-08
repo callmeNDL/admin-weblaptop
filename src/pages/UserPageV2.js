@@ -21,7 +21,7 @@ import dayjs from 'dayjs';
 import SearchTable from '../components/search/SeachTable';
 import Iconify from '../components/iconify';
 import ActionButtons from '../components/action-button/ActionButtons';
-import { Delete, get, getAuthToken, post } from '../services/request/request-service';
+import { Delete, get, getAuthToken, post, put } from '../services/request/request-service';
 import FormDialogSubmit from '../components/formDialog/FormDialogSubmit';
 import FormDialog from '../components/formDialog/FormDialog';
 // ----------------------------------------------------------------------
@@ -37,8 +37,9 @@ const defaultValues = {
   ward: '',
   diaChi: '',
   password: '',
-
+  ngaySinh: '',
 };
+
 export default function UsersPageV2() {
   const [open, setOpen] = useState(false);
   const [dataList, setDataList] = useState([]);
@@ -167,27 +168,6 @@ export default function UsersPageV2() {
   //   }
   // };
 
-  const handleDele = async () => {
-    const { accessToken } = await getAuthToken();
-    if (selectData && accessToken) {
-      if (selectData.id) {
-        try {
-          const res = await Delete(`/customer/${selectData.id}/delete`, {
-            headers: {
-              Authorization: `Token ${accessToken}`,
-            }
-          })
-          if (res) {
-            enqueueSnackbar('Xoá thành công', { variant: 'error' });
-            getList()
-          }
-        } catch (error) {
-          console.log(error);
-        }
-      }
-    }
-  };
-
   const handleClose = () => {
     setOpen(false);
     reset(defaultValues)
@@ -256,11 +236,26 @@ export default function UsersPageV2() {
         ngaySinh: date ?? '',
         password: data.password ?? '',
       };
-      const res = await post('/customer/register', fromData);
-      if (res) {
-        enqueueSnackbar('Thêm thành công', { variant: 'success' });
-        handleClose()
-        reset(defaultValues)
+
+      if (selectData?.id) {
+        const res = await put('/customer/register', fromData);
+        if (res) {
+          enqueueSnackbar('Cập nhật thành công', { variant: 'success' });
+          handleClose()
+          reset(defaultValues)
+        } else {
+          enqueueSnackbar('Cập nhật thất bại!', { variant: 'error' });
+        }
+      } else {
+        const res = await post('/customer/register', fromData);
+        if (res) {
+          enqueueSnackbar('Thêm thành công', { variant: 'success' });
+          handleClose()
+          reset(defaultValues)
+        }
+        else {
+          enqueueSnackbar('Thêm thất bại!', { variant: 'error' });
+        }
       }
     } catch (error) {
       enqueueSnackbar('Thêm thất bại', { variant: 'error' });
@@ -285,12 +280,6 @@ export default function UsersPageV2() {
     }
   };
 
-  useEffect(() => {
-    getList()
-    getProvince()
-    setSelectData({})
-  }, [])
-
   const handleDeleteClose = () => {
     setOpenDelete(false);
     setSelectData({});
@@ -301,7 +290,7 @@ export default function UsersPageV2() {
       const { accessToken } = await getAuthToken();
       if (accessToken && selectData) {
         // call api delete
-        const res = await Delete(`sanpham/${selectData.id}`, {
+        const res = await put(`/customer/${selectData.id}/delete`, {
           headers: {
             Authorization: `Token ${accessToken}`,
           },
@@ -327,9 +316,16 @@ export default function UsersPageV2() {
         ...selectData,
         Ten: selectData.ten
       }));
-      setStartDate(dayjs(selectData?.ngaySinh))
+
     }
   }, [selectData])
+
+  useEffect(() => {
+    getList()
+    getProvince()
+    setSelectData({})
+    setStartDate(dayjs(selectData?.ngaySinh))
+  }, [])
 
   return (
     <>
@@ -424,6 +420,7 @@ export default function UsersPageV2() {
                 {...register('username', { required: 'Nhập username' })}
                 error={!!errors.username}
                 helperText={errors.username?.message}
+                disabled={selectData ? 'true' : 'false'}
               />
             </Grid>
             <Grid item xs={6} sm={6}>
@@ -435,6 +432,7 @@ export default function UsersPageV2() {
                 }}
                 format="DD/MM/YYYY"
                 inputFormat="DD/MM/YYYY"
+                value={startDate}
               />
             </Grid>
             <Grid item xs={6} sm={6}>
@@ -545,7 +543,7 @@ export default function UsersPageV2() {
         handleSubmit={handleDelete}
       >
         <Box component="form" noValidate autoComplete="off" style={{ marginTop: '10px' }}>
-          <></>
+          <>{selectData.hoTenLot} {selectData.ten}</>
         </Box>
       </FormDialog>
     </>

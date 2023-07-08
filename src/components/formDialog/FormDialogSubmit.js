@@ -19,6 +19,7 @@ export default function FormDialogSubmit({
   return (
     <Dialog
       maxWidth={size}
+      fullWidth={size}
       open={open}
       onClose={handleClose}
       aria-labelledby="alert-dialog-title"

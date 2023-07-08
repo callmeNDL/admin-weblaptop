@@ -1,8 +1,8 @@
 export const enumData = {
   CPU: [
-    { giaTriThuocTinh: 'Intel Core i3-1115G4' },
-    { giaTriThuocTinh: 'Intel Core i3 1005G1' },
-    { giaTriThuocTinh: 'Intel Core i3-1130G4' },
+    { key: "COREi31115G4", giaTriThuocTinh: 'Intel Core i3-1115G4' },
+    { key: "COREi31005G1", giaTriThuocTinh: 'Intel Core i3 1005G1' },
+    { key: "COREi31000G4", giaTriThuocTinh: 'Intel Core i3-1130G4' },
   ],
   RAM: [{ giaTriThuocTinh: '8 GB' }, { giaTriThuocTinh: '16 GB' }, { giaTriThuocTinh: '32 GB' }],
   Manhinh: [

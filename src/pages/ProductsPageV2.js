@@ -12,6 +12,8 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Dialog,
+  DialogTitle,
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { Controller, useForm } from 'react-hook-form';
@@ -25,6 +27,26 @@ import SearchTable from '../components/search/SeachTable';
 import { enumData } from '../constant/enumData';
 import FormDialogSubmit from '../components/formDialog/FormDialogSubmit';
 // ----------------------------------------------------------------------
+const defaultValues = {
+  RAM: "",
+  CPU: "",
+  Luutru: "",
+  Manhinh: "",
+  Mau: "",
+  gia: ""
+}
+
+const defaultValuesProduct = {
+  tenSanPham: '',
+  moTa: '',
+  namRaMat: '',
+  soLuongTon: 0,
+  baoHanh: '',
+  danhMuc: '',
+  nhaSanXuat: '',
+  thuocTinhs: [],
+}
+
 export default function ProductPageV2() {
   const [open, setOpen] = useState(false);
   const [file, setFile] = useState(null);
@@ -33,6 +55,9 @@ export default function ProductPageV2() {
   const [danhMucs, setdanhMucs] = useState([]);
   const [selectData, setSelectData] = useState({});
   const [openDelete, setOpenDelete] = useState(false);
+  const [openOption, setOpenOption] = useState(false)
+  const [dataListOP, setDataListOP] = useState([]);
+
 
   const columns = [
     { field: 'id', headerName: 'ID', width: 90 },
@@ -103,6 +128,26 @@ export default function ProductPageV2() {
       ),
     },
   ];
+
+  const columnOP = [
+    // { field: 'id', headerName: 'ID', width: 50 },
+    { field: 'RAM', headerName: 'Ram', width: 180 },
+    { field: 'CPU', headerName: 'CPU', width: 200 },
+    { field: 'Manhinh', headerName: 'Màn hình', width: 200 },
+    { field: 'Luutru', headerName: 'Lưu trữ', width: 200 },
+    {
+      field: 'gia',
+      headerName: 'Giá',
+      minWidth: 120,
+      align: 'center',
+    },
+    {
+      field: 'loai',
+      headerName: 'Loại',
+      minWidth: 80,
+      align: 'center',
+    },
+  ]
   const {
     register,
     reset,
@@ -111,17 +156,17 @@ export default function ProductPageV2() {
     formState: { errors },
     handleSubmit,
   } = useForm({
-    defaultValues: {
-      tenSanPham: '',
-      gia: '',
-      moTa: '',
-      namRaMat: '',
-      soLuongTon: 0,
-      baoHanh: '',
-      danhMuc: '',
-      nhaSanXuat: '',
-      thuocTinhs: [],
-    },
+    defaultValuesProduct
+  });
+
+  const {
+    register: register2,
+    watch: watch2,
+    reset: reset2,
+    formState: { errors: errors2 },
+    handleSubmit: handleSubmit2,
+  } = useForm({
+    defaultValues
   });
 
   const getNhasanxuats = async () => {
@@ -177,6 +222,26 @@ export default function ProductPageV2() {
     }
   };
 
+  const getDetail = async (id) => {
+    const { accessToken } = await getAuthToken();
+    if (accessToken) {
+      try {
+        const res = await get(`sanpham/${id}`, {
+          headers: {
+            Authorization: `Token ${accessToken}`,
+          },
+        });
+        // if (res?.status === 'OK') {
+        //   setDataList(res.data);
+        // }
+        console.log(res, 'res');
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
+
   const handleClickOpen = () => {
     setOpen(false);
   };
@@ -211,7 +276,7 @@ export default function ProductPageV2() {
       ],
     };
 
-  //  truong hop nay la không có seledata nghĩa là mình chưa chọn thằng nào nên n hiểu là taọ mơis
+    //  truong hop nay la không có seledata nghĩa là mình chưa chọn thằng nào nên n hiểu là taọ mơis
     try {
       console.log(fromData, 'check from daat');
       if (fromData) {
@@ -259,6 +324,20 @@ export default function ProductPageV2() {
       console.log(error);
     }
   };
+  const onSubmit2 = async (data) => {
+    setDataListOP((dataListOP) => [
+      {
+        ...data,
+        id: '',
+      },
+      ...dataListOP])
+    handleClose2()
+  }
+  const handleClose2 = () => {
+    setOpenOption(false)
+    reset2(defaultValues)
+  }
+
   const handleDeleteClose = () => {
     setOpenDelete(false);
     setSelectData('')
@@ -274,24 +353,22 @@ export default function ProductPageV2() {
 
   useEffect(() => {
     if (selectData) {
-      console.log("ASASDA");
-      reset((value) => ({
-        ...value,
-        ...selectData,
-        CPU: 'Intel Core i3-1115G4',
-        RAM: value.thuocTinhs?.find((item) => item.tenThuocTinh === 'Ram')?.giaTriThuocTinh ?? '',
-        Manhinh: value.thuocTinhs?.find((item) => item.tenThuocTinh === 'Màn hình')?.giaTriThuocTinh ?? '',
-        Luutru: value.thuocTinhs?.find((item) => item.tenThuocTinh === 'Lưu trữ')?.giaTriThuocTinh ?? '',
-        Mau: value.thuocTinhs?.find((item) => item.tenThuocTinh === 'Màu sắc')?.giaTriThuocTinh ?? '',
-        gia: value.thuocTinhs?.find((item) => item.tenThuocTinh === 'Giá')?.giaTriThuocTinh ?? '',
-      }));
 
-      setValue('CPU', 'Intel Core i3-1115G4');
+      // reset((value) => ({
+      //   ...value,
+
+      //   // ...selectData,
+      //   // CPU: 'Intel Core i3-1115G4',
+      //   // RAM: value.thuocTinhs?.find((item) => item.tenThuocTinh === 'Ram')?.giaTriThuocTinh ?? '',
+      //   // Manhinh: value.thuocTinhs?.find((item) => item.tenThuocTinh === 'Màn hình')?.giaTriThuocTinh ?? '',
+      //   // Luutru: value.thuocTinhs?.find((item) => item.tenThuocTinh === 'Lưu trữ')?.giaTriThuocTinh ?? '',
+      //   // Mau: value.thuocTinhs?.find((item) => item.tenThuocTinh === 'Màu sắc')?.giaTriThuocTinh ?? '',
+      //   // gia: value.thuocTinhs?.find((item) => item.tenThuocTinh === 'Giá')?.giaTriThuocTinh ?? '',
+      // }));
     }
     console.log(selectData, 'selectData');
   }, [selectData]);
 
-  console.log(selectData, 'data');
 
   return (
     <>
@@ -330,7 +407,7 @@ export default function ProductPageV2() {
             />
           </div>
         </Stack>
-        <FormDialogSubmit open={open} title="Thêm mới sản phẩm">
+        <FormDialogSubmit open={open} title="Thêm mới sản phẩm" size='lg'>
           <form onSubmit={handleSubmit(onSubmit)}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
@@ -412,125 +489,30 @@ export default function ProductPageV2() {
                   ))}
                 </TextField>
               </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  select
-                  fullWidth
-                  name="RAM"
-                  label="RAM"
-                  inputProps={register('RAM', {
-                    required: 'Nhap RAM!',
-                  })}
-                  error={errors.RAM}
-                  helperText={errors.RAM?.message}
-                >
-                  {enumData.RAM.map((option) => (
-                    <MenuItem key={option.value} value={option.giaTriThuocTinh}>
-                      {option.giaTriThuocTinh}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </Grid>
 
-              <Grid item xs={6}>
-                <TextField
-                  select
-                  fullWidth
-                  name="CPU"
-                  label="CPU"
-                  inputProps={register('CPU', {
-                    required: 'Nhap CPU!',
-                  })}
-                  error={errors.CPU}
-                  helperText={errors.CPU?.message}
-                >
-                  {enumData.CPU.map((option) => (
-                    <MenuItem key={option.value} value={option.giaTriThuocTinh}>
-                      {option.giaTriThuocTinh}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  select
-                  fullWidth
-                  name="Luutru"
-                  label="Lưu trữ"
-                  inputProps={register('Luutru', {
-                    required: 'Nhập lưu trữ!',
-                  })}
-                  error={errors.Luutru}
-                  helperText={errors.Luutru?.message}
-                >
-                  {enumData.Luutru.map((option) => (
-                    <MenuItem key={option.value} value={option.giaTriThuocTinh}>
-                      {option.giaTriThuocTinh}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  select
-                  fullWidth
-                  name="Manhinh"
-                  label="Màn hình"
-                  inputProps={register('Manhinh', {
-                    required: 'Nhap màn hình!',
-                  })}
-                  error={errors.Manhinh}
-                  helperText={errors.Manhinh?.message}
-                >
-                  {enumData.Manhinh.map((option) => (
-                    <MenuItem key={option.value} value={option.giaTriThuocTinh}>
-                      {option.giaTriThuocTinh}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  select
-                  fullWidth
-                  name="Mau"
-                  label="Màu"
-                  inputProps={register('Mau', {
-                    required: 'Nhap Mau!',
-                  })}
-                  error={errors.Mau}
-                  helperText={errors.Mau?.message}
-                >
-                  {enumData.Mau.map((option) => (
-                    <MenuItem key={option.value} value={option.giaTriThuocTinh}>
-                      {option.giaTriThuocTinh}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  name="gia"
-                  {...register('gia', { required: 'Nhập giá' })}
-                  label="Giá"
-                  type="number"
-                  fullWidth
-                  error={!!errors.gia}
-                  helperText={errors.gia?.message}
-                />
-              </Grid>
               <Grid item xs={6}>
                 <TextField name="moTa" {...register('moTa')} label="Mô tả" type="text" fullWidth />
               </Grid>
-              {/* <Grid item xs={9}>
-                <TextField id="name" label="Hình ảnh" fullWidth disabled value={file ? file?.name : ''} />
+              <Grid item xs={12} style={{ position: 'relative' }}>
+                <Box sx={{ height: 300, width: '100%', paddingBottom: '50px' }}>
+                  <DataGrid
+                    rows={dataListOP}
+                    columns={columnOP}
+                    initialState={{
+                      pagination: {
+                        paginationModel: {
+                          pageSize: 5,
+                        },
+                      },
+                    }}
+                    pageSizeOptions={[5]}
+                    hideFooter
+                    disableRowSelectionOnClick
+
+                  />
+                </Box>
+                <Button onClick={() => { setOpenOption(!openOption) }} style={{ position: 'absolute', top: 25, right: 0 }}>Thêm Option</Button>
               </Grid>
-              <Grid item xs={3}>
-                <Button variant="contained" component="label" style={{ height: '100%' }}>
-                  Upload File
-                  <input type="file" hidden onChange={handleOnChange} />
-                </Button>
-              </Grid> */}
             </Grid>
             <div style={{ display: 'flex', justifyContent: 'end', marginTop: '20px' }}>
               <Button onClick={handleClose}>Đóng</Button>
@@ -538,12 +520,91 @@ export default function ProductPageV2() {
             </div>
           </form>
         </FormDialogSubmit>
+        <Dialog
+          fullWidth='lg'
+          open={openOption}
+          onClose={() => { setOpenOption(false) }}
+          title={`${true ? 'Cập nhật' : 'Thêm mới'} sản phẩm`}
+        >
+          <DialogTitle id="alert-dialog-title">
+            {"Thêm sản phẩm vào phiếu nhập"}
+          </DialogTitle>
+          <form onSubmit={handleSubmit2(onSubmit2)} style={{ padding: '20px' }}>
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <TextField
+                  name="RAM"
+                  {...register2('RAM', { required: 'Nhập Ram' })}
+                  label="Nhập Ram"
+                  fullWidth
+                  error={!!errors2.RAM}
+                  helperText={errors2.RAM?.message}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  name="CPU"
+                  {...register2('CPU', { required: 'Nhập CPU' })}
+                  label="CPU"
+                  fullWidth
+                  error={!!errors2.CPU}
+                  helperText={errors2.CPU?.message}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  name="Luutru"
+                  {...register2('Luutru', { required: 'Nhập Luutru' })}
+                  label="Lưu trữ"
+                  fullWidth
+                  error={!!errors2.Luutru}
+                  helperText={errors2.Luutru?.message}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  name="Manhinh"
+                  {...register2('Manhinh', { required: 'Nhập Màn hình' })}
+                  label="Màn hình"
+                  fullWidth
+                  error={!!errors2.Manhinh}
+                  helperText={errors2.Manhinh?.message}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  name="Mau"
+                  {...register2('Mau', { required: 'Nhập Màu!' })}
+                  label="Màu của sản phẩm"
+                  fullWidth
+                  error={!!errors2.Mau}
+                  helperText={errors2.Mau?.message}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  name="gia"
+                  {...register2('gia', { required: 'Nhập giá' })}
+                  label="Giá"
+                  type="number"
+                  fullWidth
+                  error={!!errors2.gia}
+                  helperText={errors2.gia?.message}
+                />
+              </Grid>
+            </Grid>
+            <div style={{ display: 'flex', justifyContent: 'end', marginTop: '20px' }}>
+              <Button onClick={handleClose2}>Đóng</Button>
+              <Button type="submit">Hoàn tất</Button>
+            </div>
+          </form>
+        </Dialog>
         <FormDialog
           open={openDelete}
           title="Bạn có chắc chắn muốn khóa không ?"
           ok="Khóa"
           close="Đóng"
-          handleClickOpen={() => {}}
+          handleClickOpen={() => { }}
           handleClose={handleDeleteClose}
           handleSubmit={handleDelete}
         >
@@ -551,7 +612,7 @@ export default function ProductPageV2() {
             <></>
           </Box>
         </FormDialog>
-      </Container>
+      </Container >
     </>
   );
 }
