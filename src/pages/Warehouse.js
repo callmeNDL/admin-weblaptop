@@ -86,8 +86,13 @@ const Warehouse = () => {
     //     <div>{new Date(params.row.createDate).toLocaleDateString('en-GB')}</div>
     //   ),
     // },    
-    { field: 'nhasanxuat', headerName: 'Tên nhà cung câp', width: 180 },
-    { field: 'email', headerName: 'Nhà xản xuất', width: 200 },
+    { field: 'nhasanxuat', headerName: 'Tên nhà cung câp', width: 180, renderCell: (params)=>(
+      <div>
+        {params.row.nhaCungCap?.tenNhaCungCap}
+      </div>
+    ),
+   },
+    // { field: 'email', headerName: 'Nhà xản xuất', width: 200 },
     { field: 'tongTien', headerName: 'Tổng tiền', width: 140 },
     {
       field: 'createDate',
@@ -411,7 +416,7 @@ const Warehouse = () => {
               setOpen(true);
             }}
           >
-            Thêm nhà sản xuất
+            Thêm mới
           </Button>
         </Stack>
         <SearchTable>
