@@ -21,14 +21,14 @@ import dayjs from 'dayjs';
 import SearchTable from '../components/search/SeachTable';
 import Iconify from '../components/iconify';
 import ActionButtons from '../components/action-button/ActionButtons';
-import { Delete, get, getAuthToken, post, put } from '../services/request/request-service';
+import request, { Delete, get, getAuthToken, post, put } from '../services/request/request-service';
 import FormDialogSubmit from '../components/formDialog/FormDialogSubmit';
 import FormDialog from '../components/formDialog/FormDialog';
 // ----------------------------------------------------------------------
 
 const defaultValues = {
   hoTenLot: '',
-  Ten: '',
+  ten: '',
   email: '',
   username: '',
   soDienThoai: '',
@@ -58,7 +58,7 @@ export default function UsersPageV2() {
     defaultValues
   });
   const [province, setProvince] = useState([]);
-  const [selectData, setSelectData] = useState([]);
+  const [selectData, setSelectData] = useState(null);
 
   const columns = [
     { field: 'id', headerName: 'ID', width: 50, align: 'center' },
@@ -155,7 +155,7 @@ export default function UsersPageV2() {
   //           reset((value) => ({
   //             ...value,
   //             ...selectData,
-  //             Ten: res.ten
+  //             ten: res.ten
   //           }));
   //           setValue('province', res.province.id);
   //           setValue('ngaySinh', res.ngaySinh);
@@ -172,6 +172,8 @@ export default function UsersPageV2() {
     setOpen(false);
     reset(defaultValues)
     setSelectData({})
+    getList()
+    setOpenDelete(false)
   };
 
   const getProvince = async () => {
@@ -220,45 +222,61 @@ export default function UsersPageV2() {
   }, [watchDistrict]);
 
   const onSubmit = async (data) => {
-    try {
-      console.log(data, "data");
-      const date = startDate?.$d.toLocaleDateString('en-CA');
-      const fromData = {
+    const date = startDate?.$d.toLocaleDateString('en-CA');
+    const fromData = {
+      hoTenLot: data.hoTenLot,
+      ten: data.ten ?? '',
+      email: data.email ?? 0,
+      username: data.username ?? '',
+      soDienThoai: data.soDienThoai ?? '',
+      province: data.province ?? '',
+      district: data.district ?? '',
+      ward: data.ward ?? '',
+      diaChi: data.diaChi ?? '',
+      ngaySinh: date ?? '',
+      password: data.password ?? '',
+    };
+
+    if (selectData?.id) {
+      const fromDataUpdate = {
         hoTenLot: data.hoTenLot,
-        Ten: data.Ten ?? '',
+        ten: data.ten ?? '',
         email: data.email ?? 0,
-        username: data.username ?? '',
         soDienThoai: data.soDienThoai ?? '',
         province: data.province ?? '',
-        district: data.district ?? '',
-        ward: data.ward ?? '',
         diaChi: data.diaChi ?? '',
         ngaySinh: date ?? '',
-        password: data.password ?? '',
       };
-
-      if (selectData?.id) {
-        const res = await put('/customer/register', fromData);
-        if (res) {
-          enqueueSnackbar('Cập nhật thành công', { variant: 'success' });
-          handleClose()
-          reset(defaultValues)
-        } else {
+      const { accessToken } = await getAuthToken();
+      if (accessToken) {
+        try {
+          const res = await put(`/customer/${selectData?.id}`, fromDataUpdate, {
+            headers: {
+              Authorization: `Token ${accessToken}`,
+            }
+          })
+          if (res) {
+            enqueueSnackbar('Cập nhật thành công', { variant: 'success' });
+            handleClose()
+            reset(defaultValues)
+          }
+        } catch (error) {
+          console.log(error);
           enqueueSnackbar('Cập nhật thất bại!', { variant: 'error' });
         }
-      } else {
+      }
+    } else {
+      try {
         const res = await post('/customer/register', fromData);
         if (res) {
           enqueueSnackbar('Thêm thành công', { variant: 'success' });
           handleClose()
           reset(defaultValues)
         }
-        else {
-          enqueueSnackbar('Thêm thất bại!', { variant: 'error' });
-        }
+      } catch (error) {
+        console.log(error);
+        enqueueSnackbar('Thêm thất bại!', { variant: 'error' });
       }
-    } catch (error) {
-      enqueueSnackbar('Thêm thất bại', { variant: 'error' });
     }
   };
 
@@ -290,15 +308,15 @@ export default function UsersPageV2() {
       const { accessToken } = await getAuthToken();
       if (accessToken && selectData) {
         // call api delete
-        const res = await put(`/customer/${selectData.id}/delete`, {
+        const res = await Delete(`/customer/${selectData?.id}/delete`, {
           headers: {
             Authorization: `Token ${accessToken}`,
           },
         });
-        if (res?.status === 'OK') {
-          getList();
-          enqueueSnackbar(res?.message, { variant: 'success' });
-          handleDeleteClose();
+        if (res?.status === 'ACCEPTED') {
+          enqueueSnackbar('Khóa thanh cong', { variant: 'success' });
+          handleClose()
+          reset(defaultValues)
         } else {
           enqueueSnackbar('Khóa thất bại', { variant: 'error' });
         }
@@ -314,7 +332,7 @@ export default function UsersPageV2() {
       reset((value) => ({
         ...value,
         ...selectData,
-        Ten: selectData.ten
+        ten: selectData?.ten
       }));
 
     }
@@ -323,7 +341,7 @@ export default function UsersPageV2() {
   useEffect(() => {
     getList()
     getProvince()
-    setSelectData({})
+    setSelectData()
     setStartDate(dayjs(selectData?.ngaySinh))
   }, [])
 
@@ -381,12 +399,12 @@ export default function UsersPageV2() {
             </Grid>
             <Grid item xs={6} sm={6}>
               <TextField
-                name="Ten"
-                {...register('Ten', { required: 'Nhập tên' })}
+                name="ten"
+                {...register('ten', { required: 'Nhập tên' })}
                 fullWidth
-                error={!!errors.Ten}
-                helperText={errors.Ten?.message}
-                label="Ten"
+                error={!!errors.ten}
+                helperText={errors.ten?.message}
+                label="ten"
               />
             </Grid>
             <Grid item xs={6}>
@@ -409,6 +427,7 @@ export default function UsersPageV2() {
                 {...register('password', { required: 'Nhập password' })}
                 error={!!errors.password}
                 helperText={errors.password?.message}
+                disabled={selectData?.id}
               />
             </Grid>}
             <Grid item xs={6}>
@@ -420,7 +439,7 @@ export default function UsersPageV2() {
                 {...register('username', { required: 'Nhập username' })}
                 error={!!errors.username}
                 helperText={errors.username?.message}
-                disabled={selectData ? 'true' : 'false'}
+                disabled={selectData?.id}
               />
             </Grid>
             <Grid item xs={6} sm={6}>
@@ -543,7 +562,7 @@ export default function UsersPageV2() {
         handleSubmit={handleDelete}
       >
         <Box component="form" noValidate autoComplete="off" style={{ marginTop: '10px' }}>
-          <>{selectData.hoTenLot} {selectData.ten}</>
+          <>{selectData?.hoTenLot} {selectData?.ten}</>
         </Box>
       </FormDialog>
     </>

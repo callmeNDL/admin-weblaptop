@@ -86,23 +86,21 @@ const Warehouse = () => {
     //     <div>{new Date(params.row.createDate).toLocaleDateString('en-GB')}</div>
     //   ),
     // },    
-    { field: 'nhasanxuat', headerName: 'Tên nhà cung câp', width: 180, renderCell: (params)=>(
-      <div>
-        {params.row.nhaCungCap?.tenNhaCungCap}
-      </div>
-    ),
-   },
+    {
+      field: 'tenNhaCungCap', headerName: 'Tên nhà cung câp', width: 250, renderCell: (params) => (
+        <div >
+          {params.row?.nhaCungCap?.tenNhaCungCap }
+        </div>
+      ),
+    },
     // { field: 'email', headerName: 'Nhà xản xuất', width: 200 },
-    { field: 'tongTien', headerName: 'Tổng tiền', width: 140 },
+    { field: 'tongTien', headerName: 'Tổng tiền', width: 220 },
     {
       field: 'createDate',
       headerName: 'Ngày tạo',
       type: 'number',
-      minWidth: 90,
+      minWidth: 180,
       align: 'center',
-      renderCell: (params) => (
-        <div>{new Date(params.row.createDate).toLocaleDateString('en-GB')}</div>
-      ),
     },
     {
       field: 'active',
@@ -237,9 +235,7 @@ const Warehouse = () => {
   }
   const onSubmit = async (data) => {
     try {
-      console.log(data, 'selectData');
       let arrChiTietPhieuNhapHang = []
-
       if (dataListSP?.length > 0) {
         arrChiTietPhieuNhapHang = dataListSP.map((item) => ({
           giaNhap: item.giaSanPham,
@@ -249,7 +245,6 @@ const Warehouse = () => {
           }
         }))
       }
-
       console.log(arrChiTietPhieuNhapHang, 'arrChiTietPhieuNhapHang');
 
       const fromData = {
@@ -402,6 +397,9 @@ const Warehouse = () => {
   useEffect(() => {
     getList();
   }, [])
+
+
+  console.log(selectData,"aaa");
   return (
     <>
       <Container>
@@ -416,7 +414,7 @@ const Warehouse = () => {
               setOpen(true);
             }}
           >
-            Thêm mới
+            Thêm nhà sản xuất
           </Button>
         </Stack>
         <SearchTable>
@@ -546,7 +544,7 @@ const Warehouse = () => {
                     select
                     fullWidth
                     name="sanphamNSX"
-                    label="Thêm sản phẩm nhập"
+                    label="Thêm sản phẩm nhập."
                     inputProps={register2('sanphamNSX', {
                       required: 'Nhập tên nhà cung cấp!',
                     })}

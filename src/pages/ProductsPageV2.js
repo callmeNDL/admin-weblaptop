@@ -18,11 +18,13 @@ import {
 import { DataGrid } from '@mui/x-data-grid';
 import { Controller, useForm } from 'react-hook-form';
 import { enqueueSnackbar } from 'notistack';
+import { values } from 'lodash';
+
 // components
 import ActionButtons from '../components/action-button/ActionButtons';
 import Iconify from '../components/iconify';
 import FormDialog from '../components/formDialog/FormDialog';
-import { Delete, get, getAuthToken, post } from '../services/request/request-service';
+import { Delete, get, getAuthToken, post, put } from '../services/request/request-service';
 import SearchTable from '../components/search/SeachTable';
 import { enumData } from '../constant/enumData';
 import FormDialogSubmit from '../components/formDialog/FormDialogSubmit';
@@ -43,7 +45,7 @@ const defaultValuesProduct = {
   soLuongTon: 0,
   baoHanh: '',
   danhMuc: '',
-  nhaSanXuat: '',
+  nhaSanXuat: 0,
   thuocTinhs: [],
 }
 
@@ -153,6 +155,7 @@ export default function ProductPageV2() {
     reset,
     control,
     setValue,
+    getValues,
     formState: { errors },
     handleSubmit,
   } = useForm({
@@ -179,7 +182,8 @@ export default function ProductPageV2() {
           },
         });
         if (res?.status === 'OK') {
-          setnhasanxuats(res.data);
+          // setnhasanxuats(res.data);
+          setnhasanxuats(res?.data.map((item) => ({ id: item.id, tenNhaSanXuat: item.tenNhaSanXuat })));
         }
       } catch (error) {
         console.log(error);
@@ -208,7 +212,7 @@ export default function ProductPageV2() {
     const { accessToken } = await getAuthToken();
     if (accessToken) {
       try {
-        const res = await get('sanphamactive?limit=10&currentpage=0', {
+        const res = await get('sanphamactive?limit=1000&currentpage=0', {
           headers: {
             Authorization: `Token ${accessToken}`,
           },
@@ -222,6 +226,7 @@ export default function ProductPageV2() {
     }
   };
 
+
   const getDetail = async (id) => {
     const { accessToken } = await getAuthToken();
     if (accessToken) {
@@ -231,9 +236,9 @@ export default function ProductPageV2() {
             Authorization: `Token ${accessToken}`,
           },
         });
-        // if (res?.status === 'OK') {
-        //   setDataList(res.data);
-        // }
+        if (res?.status === 'OK') {
+          setDataList(res.data);
+        }
         console.log(res, 'res');
       } catch (error) {
         console.log(error);
@@ -247,7 +252,10 @@ export default function ProductPageV2() {
   };
   const handleClose = () => {
     setOpen(false);
-    setSelectData({});
+    setSelectData(null);
+    // reset(defaultValuesProduct)
+    // reset2(defaultValues)
+    setDataListOP([])
   };
   const handleOnChange = (e) => {
     console.log(e.target.files[0]);
@@ -255,51 +263,85 @@ export default function ProductPageV2() {
   };
 
   const onSubmit = async (data) => {
+    let arrThuocTinh = []
+    if (dataListOP?.length > 0) {
+      dataListOP?.forEach((item, index) => {
+        arrThuocTinh = [
+          { tenThuocTinh: 'CPU', giaTriThuocTinh: item?.CPU, loai: index + 1 },
+          { tenThuocTinh: 'Ram', giaTriThuocTinh: item?.RAM, loai: index + 1 },
+          { tenThuocTinh: 'Màn hình', giaTriThuocTinh: item?.Manhinh, loai: index + 1 },
+          { tenThuocTinh: 'Lưu trữ', giaTriThuocTinh: item?.Luutru, loai: index + 1 },
+          { tenThuocTinh: 'Màu sắc', giaTriThuocTinh: item?.Mau, loai: index + 1 },
+          { tenThuocTinh: 'Giá', giaTriThuocTinh: item?.gia, loai: index + 1 },
+          ...arrThuocTinh
+        ]
+      })
+    }
     const fromData = {
       tenSanPham: data.tenSanPham,
       namRaMat: data.namRaMat ?? '',
       soLuongTon: data.soLuongTon ?? 0,
       baoHanh: data.baoHanh ?? '',
+      moTa: data.moTa ?? '',
       danhMuc: {
         id: data.danhMuc,
       },
       nhaSanXuat: {
         id: data.nhaSanXuat,
       },
-      thuocTinhs: [
-        { tenThuocTinh: 'CPU', giaTriThuocTinh: data.CPU },
-        { tenThuocTinh: 'Ram', giaTriThuocTinh: data.RAM },
-        { tenThuocTinh: 'Màn hình', giaTriThuocTinh: data.Manhinh },
-        { tenThuocTinh: 'Lưu trữ', giaTriThuocTinh: data.Luutru },
-        { tenThuocTinh: 'Màu sắc', giaTriThuocTinh: data.Mau },
-        { tenThuocTinh: 'Giá', giaTriThuocTinh: data.gia },
-      ],
+      thuocTinhs: arrThuocTinh,
     };
 
     //  truong hop nay la không có seledata nghĩa là mình chưa chọn thằng nào nên n hiểu là taọ mơis
-    try {
-      console.log(fromData, 'check from daat');
-      if (fromData) {
-        const { accessToken } = await getAuthToken();
-        if (accessToken) {
-          const res = await post('sanpham', fromData, {
-            headers: {
-              Authorization: `Token ${accessToken}`,
-            },
-          });
-          if (res?.status === 'OK') {
-            getList();
-            enqueueSnackbar('Thêm thành công', { variant: 'success' });
-            handleClose();
-          } else {
-            enqueueSnackbar('Thêm thất bại', { variant: 'error' });
+    if (!selectData) {
+      try {
+        if (fromData) {
+          const { accessToken } = await getAuthToken();
+          if (accessToken) {
+            const res = await post('sanpham', fromData, {
+              headers: {
+                Authorization: `Token ${accessToken}`,
+              },
+            });
+            if (res?.status === 'OK') {
+              getList();
+              enqueueSnackbar('Thêm thành công', { variant: 'success' });
+              handleClose();
+            } else {
+              enqueueSnackbar('Thêm thất bại', { variant: 'error' });
+            }
           }
         }
+      } catch (error) {
+        enqueueSnackbar('Thêm thất bại', { variant: 'error' });
+        console.log(error);
       }
-    } catch (error) {
-      enqueueSnackbar('Thêm thất bại', { variant: 'error' });
-      console.log(error);
+    } else {
+      console.log(selectData, "selectData");
+      try {
+        if (fromData) {
+          const { accessToken } = await getAuthToken();
+          if (accessToken) {
+            const res = await put(`sanpham/${selectData.id}`, fromData, {
+              headers: {
+                Authorization: `Token ${accessToken}`,
+              },
+            });
+            if (res?.status === 'OK') {
+              getList();
+              enqueueSnackbar('Cap nhat thành công', { variant: 'success' });
+              handleClose();
+            } else {
+              enqueueSnackbar('Cap nhat thất bại', { variant: 'error' });
+            }
+          }
+        }
+      } catch (error) {
+        enqueueSnackbar('Cap nhat thất bại', { variant: 'error' });
+        console.log(error);
+      }
     }
+
   };
 
   const handleDelete = async () => {
@@ -353,22 +395,44 @@ export default function ProductPageV2() {
 
   useEffect(() => {
     if (selectData) {
+      const { nhaSanXuat, thuocTinhs, ...dataReset } = selectData
+      let coutLoai = 0
+      if (!!thuocTinhs && thuocTinhs?.length) {
+        const loais = thuocTinhs?.map((item) => item?.loai)
+        coutLoai = Math?.max(...loais);
 
-      // reset((value) => ({
-      //   ...value,
+        if (coutLoai !== 0) {
+          const newOption = []
+          // eslint-disable-next-line no-plusplus
+          for (let i = 0; i < coutLoai; i++) {
+            const tt = thuocTinhs.filter((t) => t.loai === i + 1)
+            if (!!tt && tt?.length) {
+              const ob =
+              {
+                RAM: tt?.find((a) => a?.tenThuocTinh === "Ram")?.giaTriThuocTinh,
+                CPU: tt?.find((a) => a?.tenThuocTinh === "CPU")?.giaTriThuocTinh,
+                Luutru: tt?.find((a) => a?.tenThuocTinh === "Lưu trữ")?.giaTriThuocTinh,
+                Manhinh: tt?.find((a) => a?.tenThuocTinh === "Màn hình")?.giaTriThuocTinh,
+                Mau: tt?.find((a) => a?.tenThuocTinh === "Màu sắc")?.giaTriThuocTinh,
+                gia: tt?.find((a) => a?.tenThuocTinh === "Giá")?.giaTriThuocTinh,
+                id: i,
+              }
+              if (ob) {
+                newOption.push(ob)
+              }
 
-      //   // ...selectData,
-      //   // CPU: 'Intel Core i3-1115G4',
-      //   // RAM: value.thuocTinhs?.find((item) => item.tenThuocTinh === 'Ram')?.giaTriThuocTinh ?? '',
-      //   // Manhinh: value.thuocTinhs?.find((item) => item.tenThuocTinh === 'Màn hình')?.giaTriThuocTinh ?? '',
-      //   // Luutru: value.thuocTinhs?.find((item) => item.tenThuocTinh === 'Lưu trữ')?.giaTriThuocTinh ?? '',
-      //   // Mau: value.thuocTinhs?.find((item) => item.tenThuocTinh === 'Màu sắc')?.giaTriThuocTinh ?? '',
-      //   // gia: value.thuocTinhs?.find((item) => item.tenThuocTinh === 'Giá')?.giaTriThuocTinh ?? '',
-      // }));
+            }
+            setDataListOP(newOption)
+          }
+        }
+      }
+      reset((value) => ({
+        ...value,
+        nhaSanXuat: nhaSanXuat?.id,
+        ...dataReset,
+      }));
     }
-    console.log(selectData, 'selectData');
   }, [selectData]);
-
 
   return (
     <>
@@ -407,7 +471,7 @@ export default function ProductPageV2() {
             />
           </div>
         </Stack>
-        <FormDialogSubmit open={open} title="Thêm mới sản phẩm" size='lg'>
+        <FormDialogSubmit open={open} title={selectData ? 'Cập nhật mới sản phẩm' : "Thêm mới sản phẩm"} size='lg'>
           <form onSubmit={handleSubmit(onSubmit)}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
@@ -437,6 +501,7 @@ export default function ProductPageV2() {
                   {...register('soLuongTon', { required: 'Nhập số lượng tồn' })}
                   label="Số lượng tồn"
                   fullWidth
+                  type='number'
                   error={!!errors.soLuongTon}
                   helperText={errors.soLuongTon?.message}
                 />
@@ -446,6 +511,7 @@ export default function ProductPageV2() {
                   name="namRaMat"
                   {...register('namRaMat', { required: 'Nhập Năm ra mắt' })}
                   label="Năm ra mắt"
+                  type='number'
                   fullWidth
                   error={!!errors.namRaMat}
                   helperText={errors.namRaMat?.message}
@@ -460,6 +526,7 @@ export default function ProductPageV2() {
                   inputProps={register('nhaSanXuat', {
                     required: 'Nhap nhà sản xuất!',
                   })}
+                  value={getValues('nhaSanXuat')}
                   error={errors.nhaSanXuat}
                   helperText={errors.nhaSanXuat?.message}
                 >
@@ -479,6 +546,7 @@ export default function ProductPageV2() {
                   inputProps={register('danhMuc', {
                     required: 'Nhập danh mục!',
                   })}
+                  value={getValues('danhMuc')}
                   error={errors.danhMuc}
                   helperText={errors.danhMuc?.message}
                 >

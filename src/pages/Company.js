@@ -128,7 +128,7 @@ export default function Company() {
 
   const onSubmit = async (data) => {
     console.log(selectData, 'selectData');
-    if (!selectData && !selectData?.id) {
+    if (!selectData?.id) {
       // truong hop nay la không có seledata nghĩa là mình chưa chọn thằng nào nên n hiểu là taọ mơis
       try {
         if (data) {
