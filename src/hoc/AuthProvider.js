@@ -6,8 +6,6 @@ const AuthProvider = ({children}) => {
   const {accessToken} = getAuthToken()
 
   useEffect(()=>{
-    // eslint-disable-next-line no-debugger
-    debugger
     if(pathName!=='/login'&& !accessToken){
       window.location.replace('./login')
     }
