@@ -13,6 +13,7 @@ import { StyledChart } from './components/chart';
 import ScrollToTop from './components/scroll-to-top';
 import store from './redux/store';
 import './scss/style.scss';
+import AuthProvider from './hoc/AuthProvider';
 // ----------------------------------------------------------------------
 
 export default function App() {
@@ -31,7 +32,9 @@ export default function App() {
               <ThemeProvider>
                 <ScrollToTop />
                 <StyledChart />
+                <AuthProvider >
                 <Router />
+                </AuthProvider>
               </ThemeProvider>
             </LocalizationProvider>
 
