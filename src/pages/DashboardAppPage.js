@@ -79,6 +79,46 @@ export default function DashboardAppPage() {
             <AppWidgetSummary title="Loại sản phẩm" total={data?.data?.countLoaiSanPham} color="warning" icon={'mdi:tooltip-text'} />
           </Grid>
 
+          <Grid item xs={12} md={6} lg={8}>
+            <AppWebsiteVisits
+              title="Website Visits"
+              subheader="(+43%) than last year"
+              chartLabels={[
+                '01/01/2003',
+                '02/01/2003',
+                '03/01/2003',
+                '04/01/2003',
+                '05/01/2003',
+                '06/01/2003',
+                '07/01/2003',
+                '08/01/2003',
+                '09/01/2003',
+                '10/01/2003',
+                '11/01/2003',
+              ]}
+              chartData={[
+                {
+                  name: 'Team A',
+                  type: 'column',
+                  fill: 'solid',
+                  data: [ 30],
+                },
+                {
+                  name: 'Team B',
+                  type: 'area',
+                  fill: 'gradient',
+                  data: [ 43],
+                },
+                {
+                  name: 'Team C',
+                  type: 'line',
+                  fill: 'solid',
+                  data: [39],
+                },
+              ]}
+            />
+          </Grid>
+
           <Grid item xs={12} md={6} lg={4}>
             <AppCurrentVisits
               title="Current Visits"
