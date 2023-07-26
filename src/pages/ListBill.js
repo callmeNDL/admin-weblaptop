@@ -45,11 +45,15 @@ const defaultValues = {
 export default function ListBill() {
   const [open, setOpen] = useState(false);
   const [showDetailBill, setShowDetailBill] = useState(false);
+  const [showDetailBillStatus, setShowDetailBillStatus] = useState(false);
+
   const [file, setFile] = useState(null);
   const [dataList, setDataList] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectData, setSelectData] = useState([]);
+  const [selectDataSP, setSelectDataSP] = useState([]);
   const [openDelete, setOpenDelete] = useState(false);
+
   const {
     register,
     reset,
@@ -99,6 +103,18 @@ export default function ListBill() {
       sortable: false,
       minWidth: 100,
       align: 'center',
+      renderCell: (params) => (
+        // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+        <div
+          className='detailAction'
+          onClick={() => {
+            setSelectData(params.row)
+            setShowDetailBillStatus(true)
+          }}
+        >
+          Xem danh sách sản phẩm
+        </div>
+      )
     },
     {
       field: 'ghiChu',
@@ -128,15 +144,28 @@ export default function ListBill() {
     },
   ];
 
+  const columnPhieuNhap = [
+    { field: 'id', headerName: 'ID', width: 50 },
+    { field: 'tenSanPham', headerName: 'Sản phẩm', width: 250 },
+    { field: 'option', headerName: 'Option', width: 300 },
+    { field: 'soLuong', headerName: 'Số lượng', width: 100 },
+    {
+      field: 'gia',
+      headerName: 'Giá',
+      minWidth: 120,
+      align: 'center',
+    },
+  ]
+
   useEffect(() => {
     getList()
   }, [])
 
   const handleClickOpen = () => {
-    setOpen(false);
+    setShowDetailBill(false);
   };
   const handleClose = () => {
-    setOpen(false);
+    setShowDetailBill(false);
   };
   const handleOnChange = (e) => {
     console.log(e.target.files[0]);
@@ -194,13 +223,46 @@ export default function ListBill() {
     getList();
   }, []);
 
+  useEffect(() => {
+    if (selectData) {
+      reset((value) => ({
+        ...value,
+        ...selectData,
+      }));
+      if(!!selectData?.chiTietHoaDons && selectData?.chiTietHoaDons?.length){
+        let dataSanPham = []
+        dataSanPham = selectData?.chiTietHoaDons.map((item) => {
+          let optionSP = ""
+
+          item?.sanPham?.thuocTinhs?.forEach((a,index) => {
+            optionSP = `${optionSP} ${index !== 0 ? '/' : ""} ${a.giaTriThuocTinh}`
+          })
+          
+          // item?.sanPham?.thuocTinhs
+          return {
+            gia : item?.gia ?? '',
+            id: item?.id ?? '',
+            tenSanPham: item?.sanPham?.tenSanPham ?? "",
+            soLuong: item?.soLuong ?? "",
+            option : optionSP
+          }
+        })
+      setSelectDataSP(dataSanPham)
+
+      }
+      
+    }
+  }, [selectData])
+
+  console.log(selectData, "selectData");
+
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4" gutterBottom>
           Danh sách hóa đơn
         </Typography>
-        <Button
+        {/* <Button
           variant="contained"
           startIcon={<Iconify icon="eva:plus-fill" />}
           onClick={() => {
@@ -208,10 +270,10 @@ export default function ListBill() {
           }}
         >
           Thêm hóa đơn
-        </Button>
+        </Button> */}
       </Stack>
       <SearchTable>
-            <TextField name="tenKhachHang" label="Tên khách hàng" />
+        <TextField name="tenKhachHang" label="Tên khách hàng" />
       </SearchTable>
       <Stack direction="row" flexWrap="wrap-reverse" alignItems="center" justifyContent="flex-end" sx={{ mb: 5 }}>
         <div style={{ height: 400, width: '100%' }}>
@@ -230,44 +292,85 @@ export default function ListBill() {
           />
         </div>
       </Stack>
-      
       <FormDialogSubmit
-        open={open}
+        open={showDetailBill}
         title="Thêm mới hóa đơn"
+        size='lg'
       >
-        
         <Box component="form" noValidate autoComplete="off">
           <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <TextField id="name" label="Tên khách hàng" multiline fullWidth />
+            <Grid item xs={12} style={{ marginTop: '20px' }}>
+              <TextField
+                type="text"
+                label="Tên khách hàng"
+                name="tenKhachHang"
+                {...register('tenKhachHang', { required: 'Nhập Tên khách hàng' })}
+                fullWidth
+                error={!!errors.tenKhachHang}
+                helperText={errors.tenKhachHang?.message}
+              />
               {/* rows={2} */}
             </Grid>
             <Grid item xs={6}>
-              <TextField id="diaChi" label="Địa chỉ" fullWidth />
+              <TextField
+                type="text"
+                label="Dịa chỉ"
+                name="diaChi"
+                {...register('diaChi', { required: 'Nhập Dịa chỉ' })}
+                fullWidth
+                error={!!errors.diaChi}
+                helperText={errors.diaChi?.message}
+              />
             </Grid>
             <Grid item xs={6}>
-              <TextField id="soDienThoai" label="Số điện thoại" fullWidth />
+              <TextField id="soDienThoai" type="text"
+                name="soDienThoai"
+                {...register('soDienThoai', { required: 'Nhập Dịa chỉ' })}
+                fullWidth
+                error={!!errors.soDienThoai}
+                helperText={errors.soDienThoai?.message}
+                label="Số điện thoại" />
             </Grid>
             <Grid item xs={6}>
-              <TextField id="ghiChu" label="Ghi chú" fullWidth />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField id="trangThaiThanhToan" label="Thanh toán" fullWidth />
+              <TextField id="soTienTraTruoc" label="Số tiền trả trước" name="soTienTraTruoc"
+                {...register('soTienTraTruoc', { required: 'Số tiền trả trước' })}
+                fullWidth
+                error={!!errors.soTienTraTruoc}
+                helperText={errors.soTienTraTruoc?.message} />
             </Grid>
 
             <Grid item xs={6}>
-              <TextField id="soTienTraGop" label="Sô tiền trả góp" fullWidth />
+              <TextField id="tongTien" label="Tổng tiền" name="soTienTraTruoc"
+                {...register('tongTien', { required: 'Số tiền trả trước' })}
+                fullWidth
+                error={!!errors.tongTien}
+                helperText={errors.tongTien?.message} />
             </Grid>
-            <Grid item xs={6}>
-              <TextField id="soTienTraTruoc" label="Số tiền trả trước" fullWidth />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField id="soTienTraGop" label="Số tiền trả góp" fullWidth />
-            </Grid>
+            <Grid item xs={12} style={{ position: 'relative' }}>
+              <Typography> Danh sách sản phẩm</Typography>
+                <Box sx={{ height: 300, width: '100%', paddingBottom: '50px' }}>
+                  <DataGrid
+                    rows={selectDataSP}
+                    columns={columnPhieuNhap}
+                    initialState={{
+                      pagination: {
+                        paginationModel: {
+                          pageSize: 5,
+                        },
+                      },
+                    }}
+                    pageSizeOptions={[5]}
+                    hideFooter
+                    disableRowSelectionOnClick
+
+                  />
+                </Box>
+              </Grid>
+
           </Grid>
           <div style={{ display: 'flex', justifyContent: 'end', marginTop: '20px' }}>
             <Button onClick={handleClose}>Đóng</Button>
-            <Button type="submit">Hoàn tất</Button>
+            {/* <Button type="submit">Hoàn tất</Button> */}
           </div>
         </Box>
       </FormDialogSubmit>
@@ -282,6 +385,21 @@ export default function ListBill() {
       >
         <Box component="form" noValidate autoComplete="off" style={{ marginTop: '10px' }}>
           <></>
+        </Box>
+      </FormDialog>
+      <FormDialog
+        open={showDetailBillStatus}
+        title="Chuyển trạng thái ?"
+        ok="Lưu"
+        close="Đóng"
+        handleClickOpen={() => { }}
+        handleClose={()=>{}}
+        handleSubmit={()=>{}}
+      >
+        <Box component="form" noValidate autoComplete="off" style={{ marginTop: '10px' }}>
+          <>
+          
+          </>
         </Box>
       </FormDialog>
     </Container>
