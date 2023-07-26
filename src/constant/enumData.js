@@ -5,12 +5,12 @@ export const enumData = {
     { key: "COREi31000G4", giaTriThuocTinh: 'Intel Core i3-1130G4' },
   ],
   statusBill : {
+    0: { value: 'Đặt' },
     1: { value: 'Đặt' },
     2: { value: 'Chuẩn bị' },
     3: { value: 'Giao' },
     4: { value: 'Thành công' },
-    5: { value: 'Đặt' },
-
+    5: { value: 'Xoá' },
   },
   RAM: [{ giaTriThuocTinh: '8 GB' }, { giaTriThuocTinh: '16 GB' }, { giaTriThuocTinh: '32 GB' }],
   Manhinh: [

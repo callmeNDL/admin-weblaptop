@@ -86,14 +86,7 @@ const ProductsType = () => {
       try {
         const res = await get('loaisanpham');
         if (res && res.status === 'OK') {
-          setDataList(
-            res.data.map((item) => {
-              return {
-                ...item,
-                ProductsCount: item.sanPhams.length,
-              };
-            })
-          );
+          setDataList(res.data)
         }
       } catch (error) {
         console.log(error);
@@ -204,6 +197,8 @@ const ProductsType = () => {
       }
     }
   };
+
+  console.log(dataList,'dataList');
   // const handleSubmit = async () => {
   //   const { accessToken } = await getAuthToken();
   //   if (accessToken && credentials.moTa !== '' && credentials.tenDanhMuc !== '' && credentials.ProductsCount !== '') {

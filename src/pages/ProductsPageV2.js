@@ -294,28 +294,49 @@ export default function ProductPageV2() {
 
     //  truong hop nay la không có seledata nghĩa là mình chưa chọn thằng nào nên n hiểu là taọ mơis
     if (!selectData) {
-      try {
-        if (fromData) {
-          const { accessToken } = await getAuthToken();
-          if (accessToken) {
-            const res = await post('sanpham', fromData, {
-              headers: {
-                Authorization: `Token ${accessToken}`,
-              },
-            });
-            if (res?.status === 'OK') {
-              getList();
-              enqueueSnackbar('Thêm thành công', { variant: 'success' });
-              handleClose();
+      if(file) {
+        const formDataImg = new FormData()
+
+        formDataImg.append(
+          "hinhAnh",
+          file,
+          file.name
+      );
+       try {
+            const resimg = await post('image', formDataImg)
+            if (resimg?.status === 'OK') {
+              fromData.hinhAnh = resimg?.data.id
+              try {
+                if (fromData) {
+                  const { accessToken } = await getAuthToken();
+                  if (accessToken) {
+                    const res = await post('sanpham', fromData, {
+                      headers: {
+                        Authorization: `Token ${accessToken}`,
+                      },
+                    });
+                    if (res?.status === 'OK') {
+                      getList();
+                      enqueueSnackbar('Thêm thành công', { variant: 'success' });
+                      handleClose();
+                    } else {
+                      enqueueSnackbar('Thêm thất bại', { variant: 'error' });
+                    }
+                  }
+                }
+              } catch (error) {
+                enqueueSnackbar('Thêm thất bại', { variant: 'error' });
+                console.log(error);
+              }
             } else {
               enqueueSnackbar('Thêm thất bại', { variant: 'error' });
             }
-          }
-        }
       } catch (error) {
-        enqueueSnackbar('Thêm thất bại', { variant: 'error' });
+        enqueueSnackbar('Lưu hình thất bại', { variant: 'error' });
         console.log(error);
       }
+      }
+     
     } else {
       console.log(selectData, "selectData");
       try {
@@ -390,7 +411,7 @@ export default function ProductPageV2() {
     getList();
     getNhasanxuats();
     getdanhMucs();
-    setSelectData({});
+    setSelectData(null);
   }, []);
 
   useEffect(() => {
@@ -537,6 +558,7 @@ export default function ProductPageV2() {
                   ))}
                 </TextField>
               </Grid>
+            
               <Grid item xs={6}>
                 <TextField
                   select
@@ -560,6 +582,15 @@ export default function ProductPageV2() {
 
               <Grid item xs={6}>
                 <TextField name="moTa" {...register('moTa')} label="Mô tả" type="text" fullWidth />
+              </Grid>
+                <Grid item xs={10}>
+                <TextField id="name" label="Hình ảnh" fullWidth disabled value={file ? file?.name : ''} />
+              </Grid>
+              <Grid item xs={2} display={'flex'} justifyContent={'flex-end'}>
+                <Button variant="contained" component="label" style={{ height: '100%' }}>
+                  Upload File
+                  <input type="file" hidden onChange={handleOnChange} />
+                </Button>
               </Grid>
               <Grid item xs={12} style={{ position: 'relative' }}>
                 <Box sx={{ height: 300, width: '100%', paddingBottom: '50px' }}>

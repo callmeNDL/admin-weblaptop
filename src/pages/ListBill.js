@@ -19,10 +19,11 @@ import { enqueueSnackbar } from 'notistack';
 
 import Iconify from '../components/iconify';
 import FormDialog from '../components/formDialog/FormDialog';
-import { Delete, get, getAuthToken } from '../services/request/request-service';
+import { Delete, get, getAuthToken, put } from '../services/request/request-service';
 import ActionButtons from '../components/action-button/ActionButtons';
 import SearchTable from '../components/search/SeachTable';
 import FormDialogSubmit from '../components/formDialog/FormDialogSubmit';
+import { enumData } from '../constant/enumData';
 // ----------------------------------------------------------------------
 const defaultValues = {
   tenKhachHang: '',
@@ -112,7 +113,7 @@ export default function ListBill() {
             setShowDetailBillStatus(true)
           }}
         >
-          Xem danh sách sản phẩm
+         {enumData.statusBill[params?.row?.trangThai]?.value}
         </div>
       )
     },
@@ -165,6 +166,7 @@ export default function ListBill() {
     setShowDetailBill(false);
   };
   const handleClose = () => {
+    setShowDetailBillStatus(false)
     setShowDetailBill(false);
   };
   const handleOnChange = (e) => {
@@ -218,7 +220,41 @@ export default function ListBill() {
       console.log(error);
     }
   };
-
+  const handleOnChangeStatus = async () => {
+    try {
+      const { accessToken } = await getAuthToken();
+      if (accessToken && selectData) {
+        // call api delete
+        let status = 0
+         if(selectData?.trangThai === 1 ){
+          status = 'chuanbihang'
+        }else if (selectData?.trangThai === 2 ) {
+          status = 'giaohang'
+        }
+        else if (selectData?.trangThai === 3 ) {
+          status = 'thanhcong'
+        }
+        else if (selectData?.trangThai === 4 ) {
+          status = 'xoa'
+        }
+        const res = await  put(`hoadon/${selectData.id}/${status}`,null, {
+          headers: {
+            Authorization: `Token ${accessToken}`,
+          },
+        });
+        if (res?.status === 'OK') {
+          getList();
+          enqueueSnackbar(res?.message, { variant: 'success' });
+          handleClose();
+        } else {
+          enqueueSnackbar('Khóa thất bại', { variant: 'error' });
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  
   useEffect(() => {
     getList();
   }, []);
@@ -393,12 +429,12 @@ export default function ListBill() {
         ok="Lưu"
         close="Đóng"
         handleClickOpen={() => { }}
-        handleClose={()=>{}}
-        handleSubmit={()=>{}}
+        handleClose={()=>{setShowDetailBillStatus(false)}}
+        handleSubmit={handleOnChangeStatus}
       >
         <Box component="form" noValidate autoComplete="off" style={{ marginTop: '10px' }}>
           <>
-          
+          {enumData?.statusBill[Number(selectData?.trangThai) + 1]?.value}
           </>
         </Box>
       </FormDialog>
