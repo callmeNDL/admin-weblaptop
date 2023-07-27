@@ -377,7 +377,7 @@ export default function ProductPageV2() {
       const { accessToken } = await getAuthToken();
       if (accessToken && selectData) {
         // call api delete
-        const res = await Delete(`sanpham/${selectData.id}`, {
+        const res = await Delete(`sanpham/delete/${selectData.id}`, {
           headers: {
             Authorization: `Token ${accessToken}`,
           },
