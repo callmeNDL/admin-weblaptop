@@ -259,8 +259,8 @@ export default function ProductPageV2() {
   const handleClose = () => {
     setOpen(false);
     setSelectData(null);
-    // reset(defaultValuesProduct)
-    // reset2(defaultValues)
+    reset(defaultValuesProduct)
+    reset2(defaultValues)
     setDataListOP([])
   };
   const handleOnChange = (e) => {
@@ -289,6 +289,7 @@ export default function ProductPageV2() {
       soLuongTon: data.soLuongTon ?? 0,
       baoHanh: data.baoHanh ?? '',
       moTa: data.moTa ?? '',
+      gia: data.gia ?? '',
       danhMuc: {
         id: data.danhMuc,
       },
@@ -478,9 +479,9 @@ export default function ProductPageV2() {
             Thêm mới
           </Button>
         </Stack>
-        <SearchTable>
+        {/* <SearchTable>
           <TextField name="tenSanPham" label="Tên sản phẩm" />
-        </SearchTable>
+        </SearchTable> */}
         <Stack direction="row" flexWrap="wrap-reverse" alignItems="center" justifyContent="flex-end" sx={{ mb: 5 }}>
           <div style={{ height: 400, width: '100%' }}>
             <DataGrid
@@ -589,7 +590,10 @@ export default function ProductPageV2() {
               <Grid item xs={6}>
                 <TextField name="moTa" {...register('moTa')} label="Mô tả" type="text" fullWidth />
               </Grid>
-                <Grid item xs={10}>
+              <Grid item xs={4}>
+                <TextField name="gia" {...register('gia')} label="Giá" type="text" fullWidth />
+              </Grid>
+                <Grid item xs={6}>
                 <TextField id="name" label="Hình ảnh" fullWidth disabled value={file ? file?.name : ''} />
               </Grid>
               <Grid item xs={2} display={'flex'} justifyContent={'flex-end'}>
