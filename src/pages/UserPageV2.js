@@ -67,13 +67,15 @@ export default function UsersPageV2() {
       headerName: 'Họ tên lót',
       minWidth: 150,
       align: 'center',
+      headerAlign: 'center',
       flex: 1,
     },
     {
       field: 'ten',
       headerName: 'Tên',
-      width: 100,
-      align: 'center',
+      width: 110,
+      align: 'center',  
+      headerAlign: 'center',
       flex: 1
     },
     {
@@ -82,27 +84,31 @@ export default function UsersPageV2() {
       minWidth: 120,
       flex: 1,
       align: 'center',
+      headerAlign: 'center',
     },
     {
       field: 'email',
       headerName: 'Email',
-      minWidth: 100,
+      minWidth: 120,
       flex: 1,
       align: 'center',
+      headerAlign: 'center',
     },
     {
       field: 'diaChi',
       headerName: 'Địa chỉ',
-      minWidth: 100,
+      minWidth: 130,
       flex: 1,
       align: 'center',
+      headerAlign: 'center',
     },
     {
       field: 'province',
       headerName: 'Thành phố / Tỉnh ',
-      minWidth: 100,
+      minWidth: 120,
       flex: 1,
       align: 'center',
+      headerAlign: 'center',
       renderCell: (params) => <div>{params.row.province.name}</div>,
     },
     {
@@ -110,6 +116,8 @@ export default function UsersPageV2() {
       headerName: 'Trạng thái',
       type: 'number',
       minWidth: 160,
+      align: 'center',
+      headerAlign: 'center',
       renderCell: (params) => (
         <div className={`tag tag-${params.row.active ? 'active' : 'block'}`}>
           {params.row.active ? 'Hoạt động' : 'Khóa'}
@@ -383,7 +391,7 @@ export default function UsersPageV2() {
           </div>
         </Stack>
       </Container>
-      <FormDialogSubmit open={open} title={`${selectData?.id ? 'Cập nhật' : 'Thêm mới'} nhà người dùng`}>
+      <FormDialogSubmit open={open} title={`${selectData?.id ? 'Cập nhật' : 'Thêm mới'} người dùng`}>
         <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
           <Grid container spacing={2}>
             <Grid item xs={6} sm={6}>

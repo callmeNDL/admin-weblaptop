@@ -52,18 +52,21 @@ export default function Brand() {
       headerName: 'Tên thương hiệu',
       minWidth: 200,
       align: 'center',
+      headerAlign: 'center',
     },
     {
       field: 'moTa',
       headerName: 'Mô tả',
       minWidth: 400,
       align: 'center',
+      headerAlign: 'center',
     },
     {
       field: 'active',
       headerName: 'Trạng thái',
       type: 'number',
       minWidth: 160,
+      headerAlign: 'center',
       renderCell: (params) => (
         <div className={`tag tag-${params.row.active ? 'active' : 'block'}`}>
           {params.row.active ? 'Hoạt động' : 'Khóa'}
@@ -247,7 +250,7 @@ export default function Brand() {
             />
           </div>
         </Stack>
-        <FormDialogSubmit open={open} title="Cập nhật nhà sản xuất">
+        <FormDialogSubmit open={open} title={`${selectData?.id ? 'Cập nhật' : 'Thêm mới'} nhà sản xuất`}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <Grid container spacing={2}>
               <Grid item xs={12}>

@@ -87,26 +87,28 @@ const Warehouse = () => {
     //   ),
     // },    
     {
-      field: 'tenNhaCungCap', headerName: 'Tên nhà cung câp', width: 250, renderCell: (params) => (
+      field: 'tenNhaCungCap', headerName: 'Tên nhà cung câp', width: 250,headerAlign: 'center', renderCell: (params) => (
         <div >
           {params.row?.nhaCungCap?.tenNhaCungCap }
         </div>
       ),
     },
     // { field: 'email', headerName: 'Nhà xản xuất', width: 200 },
-    { field: 'tongTien', headerName: 'Tổng tiền', width: 220 },
+    { field: 'tongTien', headerName: 'Tổng tiền', width: 220,headerAlign: 'center' },
     {
       field: 'createDate',
       headerName: 'Ngày tạo',
       type: 'number',
       minWidth: 180,
       align: 'center',
+      headerAlign: 'center',
     },
     {
       field: 'active',
       headerName: 'Trạng thái',
       type: 'number',
       minWidth: 160,
+      headerAlign: 'center',
       renderCell: (params) => (
         <div className={`tag tag-${params.row.active ? 'active' : 'block'}`}>
           {params.row.active ? 'Hoạt động' : 'Khóa'}

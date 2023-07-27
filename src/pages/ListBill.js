@@ -72,9 +72,9 @@ export default function ListBill() {
   };
   const columns = [
     { field: 'id', headerName: 'ID', width: 90 },
-    { field: 'tenKhachHang', headerName: 'Tên khách hàng', width: 180 },
+    { field: 'tenKhachHang', headerName: 'Tên khách hàng', width: 180,headerAlign: 'center',align: 'center', },
     {
-      field: 'description', headerName: 'Chi tiết hóa đơn', width: 300,
+      field: 'description', headerName: 'Chi tiết hóa đơn', width: 300,headerAlign: 'center',align: 'center',
       renderCell: (params) => (
         // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
         <div
@@ -89,13 +89,14 @@ export default function ListBill() {
       )
 
     },
-    { field: 'diaChi', headerName: 'Địa chỉ', width: 110 },
-    { field: 'isTraGop', headerName: 'Trả góp', width: 110 },
+    { field: 'diaChi', headerName: 'Địa chỉ', width: 110,headerAlign: 'center',align: 'center', },
+    // { field: 'isTraGop', headerName: 'Trả góp', width: 110,headerAlign: 'center', },
     {
       field: 'tongTien',
       headerName: 'Tổng tiền',
       type: 'number',
       minWidth: 160,
+      headerAlign: 'center',
       align: 'center',
     },
     {
@@ -104,6 +105,7 @@ export default function ListBill() {
       sortable: false,
       minWidth: 100,
       align: 'center',
+      headerAlign: 'center',
       renderCell: (params) => (
         // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
         <div
@@ -117,13 +119,13 @@ export default function ListBill() {
         </div>
       )
     },
-    {
-      field: 'ghiChu',
-      headerName: 'Ghi chú',
-      sortable: false,
-      minWidth: 100,
-      align: 'center',
-    },
+    // {
+    //   field: 'ghiChu',
+    //   headerName: 'Ghi chú',
+    //   sortable: false,
+    //   minWidth: 100,
+    //   align: 'center',
+    // },
     {
       field: 'actions',
       headerName: 'Actions',
@@ -254,7 +256,7 @@ export default function ListBill() {
       console.log(error);
     }
   };
-  
+
   useEffect(() => {
     getList();
   }, []);
@@ -273,7 +275,7 @@ export default function ListBill() {
           item?.sanPham?.thuocTinhs?.forEach((a,index) => {
             optionSP = `${optionSP} ${index !== 0 ? '/' : ""} ${a.giaTriThuocTinh}`
           })
-          
+
           // item?.sanPham?.thuocTinhs
           return {
             gia : item?.gia ?? '',
@@ -286,7 +288,7 @@ export default function ListBill() {
       setSelectDataSP(dataSanPham)
 
       }
-      
+
     }
   }, [selectData])
 
@@ -367,13 +369,13 @@ export default function ListBill() {
                 helperText={errors.soDienThoai?.message}
                 label="Số điện thoại" />
             </Grid>
-            <Grid item xs={6}>
+            {/* <Grid item xs={6}>
               <TextField id="soTienTraTruoc" label="Số tiền trả trước" name="soTienTraTruoc"
                 {...register('soTienTraTruoc', { required: 'Số tiền trả trước' })}
                 fullWidth
                 error={!!errors.soTienTraTruoc}
                 helperText={errors.soTienTraTruoc?.message} />
-            </Grid>
+            </Grid> */}
 
             <Grid item xs={6}>
               <TextField id="tongTien" label="Tổng tiền" name="soTienTraTruoc"

@@ -63,13 +63,14 @@ export default function ProductPageV2() {
 
   const columns = [
     { field: 'id', headerName: 'ID', width: 90 },
-    { field: 'tenSanPham', headerName: 'Tên sản phẩm', width: 340 },
+    { field: 'tenSanPham', headerName: 'Tên sản phẩm', width: 340,headerAlign: 'center', },
     {
       field: 'hinhAnhs',
       headerName: 'Hinh ảnh',
       minWidth: 150,
       align: 'center',
       flex: 1,
+      headerAlign: 'center',
       renderCell: (params) => (
         <div style={{ width: 450, display: 'flex', alignItems: 'center', whiteSpace: 'normal', gap: 10 }}>
           <img
@@ -90,6 +91,7 @@ export default function ProductPageV2() {
       type: 'number',
       minWidth: 90,
       align: 'center',
+      headerAlign: 'center',
     },
     {
       field: 'soLuongTon',
@@ -97,12 +99,15 @@ export default function ProductPageV2() {
       sortable: false,
       minWidth: 100,
       align: 'center',
+      headerAlign: 'center',
     },
     {
       field: 'trangThai',
       headerName: 'Trạng thái',
       type: 'number',
       minWidth: 160,
+      align: 'center',
+      headerAlign: 'center',
       renderCell: (params) => (
         <div className={`tag tag-${params.row.trangThai ? 'active' : 'block'}`}>
           {params.row.trangThai ? 'Hoạt động' : 'Khóa'}
@@ -114,6 +119,7 @@ export default function ProductPageV2() {
       headerName: 'Actions',
       minWidth: 100,
       align: 'center',
+      headerAlign: 'center',
       renderCell: (params) => (
         <ActionButtons
           handleClickOpen={() => {

@@ -315,7 +315,7 @@ import SearchTable from '../components/search/SeachTable';
               />
             </div>
           </Stack>
-          <FormDialogSubmit open={open} title="Cập nhật banner">
+          <FormDialogSubmit open={open} title={`${selectData?.id ? 'Cập nhật' : 'Thêm mới'} banner`}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <Grid container spacing={2}>
               <Grid item xs={12}>

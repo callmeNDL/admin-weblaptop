@@ -29,24 +29,28 @@ const ProductsType = () => {
       headerName: 'Tên danh mục',
       minWidth: 150,
       align: 'center',
+      headerAlign: 'center',
     },
     {
       field: 'moTa',
       headerName: 'Mô tả',
       minWidth: 300,
       align: 'center',
+      headerAlign: 'center',
     },
     {
-      field: 'ProductsCount',
+      field: 'countSP',
       headerName: 'Số lượng sản phẩm',
       minWidth: 150,
       align: 'center',
+      headerAlign: 'center',
     },
     {
       field: 'action',
       headerName: 'Actions',
       minWidth: 100,
       align: 'center',
+      headerAlign: 'center',
       renderCell: (params) => (
         <ActionButtons
           handleClickOpen={() => {
@@ -68,7 +72,7 @@ const ProductsType = () => {
     setCredentials({
       tenDanhMuc: '',
       moTa: '',
-      ProductsCount:'',
+      countSP:'',
     });
   }, []);
 
@@ -102,7 +106,7 @@ const ProductsType = () => {
     setCredentials({
       tenDanhMuc: '',
       moTa: '',
-      ProductsCount:'',
+      countSP:'',
     });
   };
   const handleOnChange = (e) => {
@@ -174,7 +178,7 @@ const ProductsType = () => {
             {
               tenDanhMuc: credentials.tenDanhMuc,
               moTa: credentials.moTa,
-              ProductsCount: credentials.ProductsCount,
+              countSP: credentials.countSP,
             },
             {
               headers: {
@@ -298,7 +302,7 @@ const ProductsType = () => {
                   value={credentials.tenDanhMuc}
                   onChange={handleChange}
                   name="tenDanhMuc"
-                  label="Tên danh mục"
+                  label="Tên loại sản phẩm"
                   fullWidth
                 />
               </Grid>
@@ -314,10 +318,10 @@ const ProductsType = () => {
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  id="ProductsCount"
-                  value={credentials.ProductsCount}
+                  id="countSP"
+                  value={credentials.countSP}
                   onChange={handleChange}
-                  name="ProductsCount"
+                  name="countSP"
                   label="Số lượng"
                   fullWidth
                 />

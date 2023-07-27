@@ -50,21 +50,23 @@ export default function Company() {
   });
   const columns = [
     { field: 'id', headerName: 'ID', width: 90 },
-    { field: 'tenNhaCungCap', headerName: 'Tên nhà cung câp', width: 180 },
-    { field: 'email', headerName: 'Email', width: 200 },
-    { field: 'diaChi', headerName: 'Địa chỉ', width: 210 },
+    { field: 'tenNhaCungCap', headerName: 'Tên nhà cung câp', width: 180,align: 'center',headerAlign: 'center' },
+    { field: 'email', headerName: 'Email', width: 200,align: 'center',headerAlign: 'center' },
+    { field: 'diaChi', headerName: 'Địa chỉ', width: 210,align: 'center',headerAlign: 'center' },
     {
       field: 'soDienThoai',
       headerName: 'Số điện thoại',
       type: 'number',
       minWidth: 160,
       align: 'center',
+      headerAlign: 'center',
     },
     {
       field: 'active',
       headerName: 'Trạng thái',
       type: 'number',
       minWidth: 160,
+      headerAlign: 'center',
       renderCell: (params) => (
         <div className={`tag tag-${params.row.active ? 'active' : 'block'}`}>
           {params.row.active ? 'Hoạt động' : 'Khóa'}
